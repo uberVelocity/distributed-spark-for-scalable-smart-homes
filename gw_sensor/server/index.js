@@ -20,7 +20,7 @@ async function generateGw() {
             // Use server ID to INSERT value of gw and timestamp to corresponding servers
             const serverId = server._id.toString();
             const gwValue = Math.random();
-            params = [serverId, new Date(), gwValue];
+            let params = [serverId, new Date(), gwValue];
             StreamService.streamData(params);
         });
     }
@@ -33,9 +33,7 @@ async function getServersListFromMongo() {
     });
 
     const connection = client.db('admin').collection('servers');
-    const servers = await connection.find({}).toArray();
-    
-    return servers;
+    return connection.find({}).toArray();
 }
 
 // 'Read' Gw value every 4 seeconds
