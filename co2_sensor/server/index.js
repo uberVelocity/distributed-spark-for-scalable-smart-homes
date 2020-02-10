@@ -20,7 +20,7 @@ async function generateCo2() {
             // Use server ID to INSERT value of CO2 and timestamp to corresponding servers
             const serverId = server._id.toString();
             const co2Value = Math.random();
-            params = [serverId, new Date(), co2Value];
+            let params = [serverId, new Date(), co2Value];
             StreamService.streamData(params);
         });
     }
@@ -34,8 +34,7 @@ async function getServersListFromMongo() {
     });
 
     const connection = client.db('admin').collection('servers');
-    const servers = await connection.find({}).toArray();
-    return servers;
+    return connection.find({}).toArray();
 }
 
 // 'Read' Co2 value every 4 seconds
