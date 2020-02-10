@@ -14,9 +14,8 @@ const port = process.env.PORT || 3002;
 async function generateGw() {
 
     const servers = await getServersListFromMongo();
-
+    // For each server in the server list, generate a gw consumption value
     if (servers.length > 0) {
-        // For each server in the server list, generate a gw consumption value
         servers.forEach(server => {
             // Use server ID to INSERT value of gw and timestamp to corresponding servers
             const serverId = server._id.toString();
@@ -31,9 +30,7 @@ async function getServersListFromMongo() {
     const client = await mongodb.MongoClient.connect('mongodb://mongo-node:27017/admin', {
         useNewUrlParser: true,
         useUnifiedTopology: true
-    }
-    );
-    
+    });
 
     const connection = client.db('admin').collection('servers');
     const servers = await connection.find({}).toArray();

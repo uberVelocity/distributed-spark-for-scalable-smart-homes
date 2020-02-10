@@ -31,8 +31,7 @@ async function getServersListFromMongo() {
     const client = await mongodb.MongoClient.connect('mongodb://mongo-node:27017/admin', {
         useNewUrlParser: true,
         useUnifiedTopology: true
-    }
-    );
+    });
 
     const connection = client.db('admin').collection('servers');
     const servers = await connection.find({}).toArray();
