@@ -1,1 +1,3 @@
-# 2020_group_09_s2534657_s3192423_s3083357
+# Scalable Computing - Household appliance life estimation
+
+TODO
