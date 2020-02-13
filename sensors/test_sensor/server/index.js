@@ -14,4 +14,6 @@ async function generateValues() {
     StreamService.streamData(params);
 }
 
+setInterval(generateValues, 4000);
+
 app.listen(port, () => console.log(`Test sensor started on port ${port}`));
