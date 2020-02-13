@@ -1,0 +1,11 @@
+const express = require('express');
+const router = express.Router();
+const PackageService = require("../../services/StreamService");
+
+// Handling random test values 
+router.post('/test', async (req, res) => {
+    const randomConsumption = req.body.data;
+    
+    PackageService.consumeRandom(randomConsumption);
+    res.status(201).send();
+});

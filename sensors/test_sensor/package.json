@@ -1,0 +1,19 @@
+{
+  "name": "test_sensor",
+  "version": "1.0.0",
+  "description": "Test sensor that writes values to Cassandra. Used for Cassandra setup and debugging.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "nodemon server/index.js"
+  },
+  "author": "Mihai Popescu",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
+  }
+}
