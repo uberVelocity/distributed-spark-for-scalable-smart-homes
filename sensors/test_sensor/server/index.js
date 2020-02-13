@@ -11,6 +11,7 @@ async function generateValues() {
     // Generate random values for testing.
     const randomValue= Math.random();
     params = [new Date(), randomValue];
+    console.log(`sending ${params[0]}:${randomValue}`);
     StreamService.streamData(params);
 }
 

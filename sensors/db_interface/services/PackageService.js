@@ -15,9 +15,8 @@ let cassandraClient = new cassandra.Client(clientOptions);
 const insertRandomQuery = 'INSERT INTO testcompaction(ts, value) VALUES(?, ?)';
 module.exports = class PackageService {
     static async consumeRandom(randomConsumption) {
-        const data = JSON.parse(randomConsumption);
-        const timeStamp = data[0];
-        const value = data[1];
+        const timeStamp = randomConsumption[0];
+        const value = randomConsumption[1];
 
         const params = [timeStamp, value];
         PackageService.insertData(insertRandomQuery, params);
