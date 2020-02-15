@@ -13,6 +13,6 @@ const insert = require('../routes/api/insert');
 
 app.use('/api/insert', insert);
 
-const port = process.env.PORT || 4001;
+const port = process.env.PORT || 4000;
 
 app.listen(port, () => console.log(`Test sensor started on port ${port}`));

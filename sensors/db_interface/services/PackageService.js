@@ -1,6 +1,6 @@
 const localDatacenter = 'datacenter1';
 const cassandra = require('cassandra-driver');
-const contactPoints = ['cassandra-0', 'cassandra-1', 'cassandra-2'];
+const contactPoints = ['cassandra-cluster', 'cassandra-cluster', 'cassandra-cluster'];
 const loadBalancingPolicy = new cassandra.policies.loadBalancing.DCAwareRoundRobinPolicy(localDatacenter); 
 const clientOptions = {
    policies : {
@@ -12,13 +12,14 @@ const clientOptions = {
 };
 let cassandraClient = new cassandra.Client(clientOptions);
 
-const insertRandomQuery = 'INSERT INTO testcompaction(ts, value) VALUES(?, ?)';
+const insertRandomQuery = 'INSERT INTO householdcompaction(appliance, ts, value) VALUES(?, ?, ?)';
 module.exports = class PackageService {
     static async consumeRandom(randomConsumption) {
         const timeStamp = randomConsumption[0];
         const value = randomConsumption[1];
+        const appliance = 'light bulb';
 
-        const params = [timeStamp, value];
+        const params = [appliance, timeStamp, value];
         PackageService.insertData(insertRandomQuery, params);
     }
 
