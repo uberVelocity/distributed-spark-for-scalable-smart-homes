@@ -17,7 +17,7 @@ module.exports = class PackageService {
     static async consumeRandom(randomConsumption) {
         const timeStamp = randomConsumption[0];
         const value = randomConsumption[1];
-        const appliance = 'light bulb';
+        const appliance = 'light bulb';  // To be replaced by actual appliance name
 
         const params = [appliance, timeStamp, value];
         PackageService.insertData(insertRandomQuery, params);
