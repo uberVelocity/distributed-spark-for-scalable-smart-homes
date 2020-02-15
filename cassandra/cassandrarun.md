@@ -2,5 +2,5 @@ CREATE TABLE testsensorcompaction( ts timestamp, value float, primary key(server
 
 
 
-CREATE KEYSPACE "household" WITH replication = {'class':'NetworkTopologyStrategy', 'replication_factor':3};
+CREATE KEYSPACE "household" WITH replication = {'class':'SimpleStrategy', 'replication_factor':3};
 
