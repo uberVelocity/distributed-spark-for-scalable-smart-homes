@@ -1,4 +1,4 @@
-from .appliance import Appliance
+from appliance import Appliance
 from time import sleep
 
 if __name__ == '__main__':
