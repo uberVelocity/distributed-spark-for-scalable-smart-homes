@@ -34,7 +34,7 @@ if __name__ == '__main__':
         print(f"Device {device.id}: time({t}) = {dt}")
         print(f"Device {device.id}: wattage({t}) = {watts}")
         print(f"Device {device.id}: temperature({t}) = {temperature}")
-
+        
         # Stream data and and sleep for 4 seconds between updates
         # TODO stream data per variable to ingestion service
         t += 1
