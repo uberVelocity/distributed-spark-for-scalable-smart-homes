@@ -15,8 +15,7 @@ if __name__ == '__main__':
         't_fault': 30
     }
 
-    dev_id = 1
-    device = Appliance(dev_id, watt_params, temp_params)
+    device = Appliance(watt_params, temp_params)
 
     t = 0
     while True:

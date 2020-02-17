@@ -1,16 +1,17 @@
 import math
 import random
 
+from datetime import datetime
+
 
 class Appliance:
-    def __init__(self, appliance_id, watt_params, temp_params):
+    def __init__(self, watt_params, temp_params):
         """
         Constructor which specifies the appliance sensor params.
-        :param appliance_id: UUID.
         :param watt_params: Dict consisting of 'base' and 'variance' values.
         :param temp_params: Dict consisting of 'base, 'variance' and 't_fault' values.
         """
-        self.id = appliance_id
+        self.id = str(datetime.utcnow())  # ID is UTC timestamp - temporary
         self.on_state = True
         self.wattage_vars = watt_params
         self.temp_vars = temp_params
