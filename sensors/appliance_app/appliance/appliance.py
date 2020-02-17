@@ -11,7 +11,7 @@ class Appliance:
         :param watt_params: Dict consisting of 'base' and 'variance' values.
         :param temp_params: Dict consisting of 'base, 'variance' and 't_fault' values.
         """
-        self.id = str(datetime.utcnow())  # ID is UTC timestamp - temporary
+        self.id = datetime.utcnow().timestamp()  # Use UNIX timestamp as temp id value
         self.on_state = True
         self.wattage_vars = watt_params
         self.temp_vars = temp_params
