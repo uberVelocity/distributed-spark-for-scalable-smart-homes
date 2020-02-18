@@ -35,7 +35,6 @@ class Vacuum:
         time_to_suction = 0
         if t > self.suction_vars['t_fault']:
             time_to_suction = t/1.4
-            print(time_to_suction)
 
         suction = self.suction_vars['base'] - time_to_suction + jitter
 
