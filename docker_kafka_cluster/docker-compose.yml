@@ -5,6 +5,8 @@ services:
     image: 'bitnami/zookeeper:3'
     ports:
      - '2181:2181'
+    volumes:
+     - 'zookeeper_data:/bitnami'
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
   kafka:
@@ -42,6 +44,8 @@ services:
       - zookeeper
 
 volumes:
+  zookeeper_data:
+    driver: local
   kafka_data:
     driver: local
   kafka2_data:
