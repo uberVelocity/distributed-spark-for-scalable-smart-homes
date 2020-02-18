@@ -1,34 +1,34 @@
-from appliance import Appliance
+from lamp import Lamp
 from time import sleep
 from datetime import datetime
 
 if __name__ == '__main__':
     watt_params = {
-        'base': 20,
+        'base': 6,
         'variance': 0.2,
-        'limit': 24
+        'limit': 10
     }
 
-    temp_params = {
+    lumen_params = {
         'base': 110,
         'variance': 0.2,
         'limit': 120,
         't_fault': 30
     }
 
-    device = Appliance(watt_params, temp_params)
+    lamp = Lamp(watt_params, lumen_params)
 
     t = 0
     while True:
-        if t is 50 or device.on_state is False:
+        if t is 50 or lamp.on_state is False:
             break
 
         dt = datetime.utcnow().timestamp()
-        watts = device.compute_wattage(t)
-        temperature = device.compute_temperature(t)
-        print(f"Device {device.id}: time({t}) = {dt}")
-        print(f"Device {device.id}: wattage({t}) = {watts}")
-        print(f"Device {device.id}: temperature({t}) = {temperature}")
+        watts = lamp.compute_wattage(t)
+        lumen = lamp.compute_lumen(t)
+        print(f"Device {lamp.id}: time({t}) = {dt}")
+        print(f"Device {lamp.id}: wattage({t}) = {watts}")
+        print(f"Device {lamp.id}: lumen({t}) = {lumen}")
 
         # Stream data and and sleep for 4 seconds between updates
         # TODO stream data per variable to ingestion service

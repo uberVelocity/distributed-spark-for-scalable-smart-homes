@@ -4,4 +4,4 @@ WORKDIR /usr/src/app
 
 COPY . .
 
-CMD [ "python", "./appliance/simulate_appliance.py" ]
+CMD [ "python", "./lamp/simulate_lamp.py" ]

@@ -4,17 +4,17 @@ import random
 from datetime import datetime
 
 
-class Appliance:
-    def __init__(self, watt_params, temp_params):
+class Lamp:
+    def __init__(self, watt_params, lumen_params):
         """
-        Constructor which specifies the appliance sensor params.
+        Constructor which specifies the lamp sensor params.
         :param watt_params: Dict consisting of 'base' and 'variance' values.
-        :param temp_params: Dict consisting of 'base, 'variance' and 't_fault' values.
+        :param lumen_params: Dict consisting of 'base, 'variance' and 't_fault' values.
         """
         self.id = datetime.utcnow().timestamp()  # Use UNIX timestamp as temp id value
         self.on_state = True
         self.wattage_vars = watt_params
-        self.temp_vars = temp_params
+        self.lumen_vars = lumen_params
 
     def compute_wattage(self, t):
         jitter = (random.random() * 2 * self.wattage_vars['variance']) - self.wattage_vars['variance']
@@ -29,17 +29,17 @@ class Appliance:
 
         return wattage
 
-    def compute_temperature(self, t):
-        jitter = (random.random() * 2 * self.temp_vars['variance']) - self.temp_vars['variance']
+    def compute_lumen(self, t):
+        jitter = (random.random() * 2 * self.lumen_vars['variance']) - self.lumen_vars['variance']
 
-        time_to_temp = 0
-        if t > self.temp_vars['t_fault']:
-            time_to_temp = t / (self.temp_vars['base'] / 30)
+        time_to_lumen = 0
+        if t > self.lumen_vars['t_fault']:
+            time_to_lumen = t / (self.lumen_vars['base'] / 30)
 
-        temperature = self.temp_vars['base'] + time_to_temp + jitter
+        lumen = self.lumen_vars['base'] + time_to_lumen + jitter
 
-        if temperature >= self.temp_vars['limit']:
+        if lumen >= self.lumen_vars['limit']:
             self.on_state = False  # If limit exceeded, break device
             return -1
 
-        return temperature
+        return lumen
