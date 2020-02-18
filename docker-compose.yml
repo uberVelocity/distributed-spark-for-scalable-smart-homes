@@ -1,0 +1,42 @@
+version: '3'
+
+networks:
+  household-network:
+    driver: bridge
+
+volumes:
+  cassandra-volume:
+
+services:
+  test-sensor:
+    container_name: testsensor
+    restart: always
+    build: sensors/test_sensor
+    ports:
+      - 3000:3000
+    networks:
+      - household-network
+  
+  db-interface:
+    container_name: dbinterface
+    restart: always
+    build: sensors/db_interface
+    ports:
+      - 4000:4000
+    networks:
+      - household-network
+
+  cassandra-cluster:
+    container_name: cassandra-cluster
+    restart: always
+    image: cassandra:3.0
+    networks:
+      - household-network
+    volumes:
+      - cassandra-volume:/var/lib/cassandra
+    expose:
+      - 7000
+      - 7001
+      - 7199
+      - 9042
+      - 9160
