@@ -37,7 +37,7 @@ if __name__ == '__main__':
             'id': vacuum.id,
             'timestamp': timestamp,
             'sensors': {
-                'temperature': suction,
+                'suction': suction,
                 'wattage': watts,
             }
         }
