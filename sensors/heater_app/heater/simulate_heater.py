@@ -31,7 +31,7 @@ if __name__ == '__main__':
     }
 
     producer = KafkaProducer(
-        bootstrap_servers=['broker1:1234'],
+        bootstrap_servers=['kafka:29092'],
         key_serializer=lambda m: m.encode(),                 # transforms id string to bytes
         value_serializer=lambda m: dumps(m).encode('ascii')  # transforms messages to json bytes
     )
@@ -39,7 +39,7 @@ if __name__ == '__main__':
 
     t = 0
     while True:
-        if t is 50 or heater.on_state is False:   # break when appliance is broken or enough time has passed
+        if t == 50 or not heater.on_state:   # break when appliance is broken or enough time has passed
             break
 
         timestamp = datetime.utcnow().timestamp()
