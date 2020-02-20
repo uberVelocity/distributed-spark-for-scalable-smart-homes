@@ -20,6 +20,7 @@ services:
       - 'kafka2_data:/bitnami'
     depends_on:
       - zookeeper
+    #command: docker exec docker_kafka_cluster_kafka_1 kafka-topics.sh --create --zookeeper zookeeper --replication-factor 3 --partitions 3 --topic historical
   kafka2:
     image: 'bitnami/kafka:2'
     ports:
