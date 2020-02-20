@@ -8,23 +8,23 @@ volumes:
   cassandra-volume:
 
 services:
-  test-sensor:
-    container_name: testsensor
-    restart: always
-    build: sensors/test_sensor
-    ports:
-      - 3000:3000
-    networks:
-      - household-network
+  # test-sensor:
+  #   container_name: testsensor
+  #   restart: always
+  #   build: sensors/test_sensor
+  #   ports:
+  #     - 3000:3000
+  #   networks:
+  #     - household-network
   
-  db-interface:
-    container_name: dbinterface
-    restart: always
-    build: sensors/db_interface
-    ports:
-      - 4000:4000
-    networks:
-      - household-network
+  # db-interface:
+  #   container_name: dbinterface
+  #   restart: always
+  #   build: sensors/db_interface
+  #   ports:
+  #     - 4000:4000
+  #   networks:
+  #     - household-network
 
   cassandra-cluster:
     container_name: cassandra-cluster
