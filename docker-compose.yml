@@ -66,7 +66,6 @@ services:
       - 'kafka2_data:/bitnami'
     depends_on:
       - zookeeper
-    #command: docker exec docker_kafka_cluster_kafka_1 kafka-topics.sh --create --zookeeper zookeeper --replication-factor 3 --partitions 3 --topic historical
   kafka2:
     image: 'bitnami/kafka:2'
     ports:
@@ -101,3 +100,13 @@ services:
       - 'kafka3_data:/bitnami'
     depends_on:
       - zookeeper
+  sensor_heater:
+    container_name: sensor_heater
+    networks:
+      - household-network
+    build: sensors/heater_app
+    depends_on:
+      - zookeeper
+      - kafka
+      - kafka2
+      - kafka3

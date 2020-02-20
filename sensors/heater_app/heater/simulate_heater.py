@@ -17,6 +17,8 @@ def on_send_error(excp):
 
 
 if __name__ == '__main__':
+    sleep(15)
+    print('I GOT WOKE')
     watt_params = {
         'base': 1500,
         'variance': 20,
@@ -31,8 +33,8 @@ if __name__ == '__main__':
     }
 
     producer = KafkaProducer(
-        bootstrap_servers=['kafka:29092'],
-        key_serializer=lambda m: m.encode(),                 # transforms id string to bytes
+        bootstrap_servers=['kafka:29091'],
+        key_serializer=lambda m: str(m).encode(),                 # transforms id string to bytes
         value_serializer=lambda m: dumps(m).encode('ascii')  # transforms messages to json bytes
     )
     heater = Heater(watt_params, temp_params)
