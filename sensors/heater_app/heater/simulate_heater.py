@@ -31,7 +31,7 @@ if __name__ == '__main__':
     }
 
     producer = KafkaProducer(
-        bootstrap_servers=['broker1:1234'],
+        bootstrap_servers=['kafka:9092'],
         key_serializer=lambda m: m.encode(),                 # transforms id string to bytes
         value_serializer=lambda m: dumps(m).encode('ascii')  # transforms messages to json bytes
     )
