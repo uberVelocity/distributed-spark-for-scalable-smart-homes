@@ -7,40 +7,43 @@ const {Kafka} = require('kafkajs')
 
 const app = express();
 
-const kafka = new Kafka({
-    clientId: 'my-app',
-    brokers: ['kafka:9092', 'kafka2:9092', 'kafka3:9092']
-});
+setTimeout(() => {
 
-const consumer = kafka.consumer({groupId: 'db-interface'});
-
-const run = async() => {
-    await consumer.connect()
-    await consumer.subscribe({topic: 'historical', fromBeginning: true});
-    
-    await consumer.run({
-        eachMessage: async ({topic, partition, message}) => {
-            // For each message, you might want to insert it into the db.
-            console.log({
-                partition,
-                offset: message.offset,
-                value: message.value.toString(),
-            })
-        }
+    const kafka = new Kafka({
+        clientId: 'my-app',
+        brokers: ['kafka:29092', 'kafka2:29092', 'kafka3:29092']
     });
-}
 
+    const consumer = kafka.consumer({groupId: 'db-interface'});
 
-run().catch(console.error);
+    const run = async() => {
+        await consumer.connect()
+        console.log(`connected to ${kafka.PORT}`)
+        await consumer.subscribe({topic: 'historical', fromBeginning: true});
+        
+        await consumer.run({
+            eachMessage: async ({topic, partition, message}) => {
+                // For each message, you might want to insert it into the db.
+                console.log({
+                    partition,
+                    offset: message.offset,
+                    value: message.value.toString(),
+                })
+            }
+        });
+    }
 
-app.use(bodyParser.json());
-app.use(cors());
-app.use(express.json());
+    run();
 
-const insert = require('../routes/api/insert');
+    app.use(bodyParser.json());
+    app.use(cors());
+    app.use(express.json());
 
-app.use('/api/insert', insert);
+    const insert = require('../routes/api/insert');
 
-const port = process.env.PORT || 4004;
+    app.use('/api/insert', insert);
 
-app.listen(port, () => console.log(`Test sensor started on port ${port}`));
+    const port = process.env.PORT || 4004;
+
+    app.listen(port, () => console.log(`Test sensor started on port ${port}`));
+}, 10000);
