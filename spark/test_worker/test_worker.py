@@ -19,13 +19,17 @@ if __name__ == '__main__':
             sleep(5)
 
     while True:
-        topic_dict = consumer.poll()
-        print(topic_dict, flush=True)
+        topics = consumer.poll()
+        print(topics.keys(), flush=True)
 
         try:
-            messages = topic_dict['historical']
-            print(messages, flush=True)
-        except KeyError:
+            assert len(topics.keys()) != 0
+
+            for topic in topics.keys():
+                for record in topics[topic]:
+                    print(record.value, flush=True)
+
+        except AssertionError:
             print('No messages available, sleeping', flush=True)
 
         sleep(5)
