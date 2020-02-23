@@ -110,3 +110,14 @@ services:
       - kafka
       - kafka2
       - kafka3
+  test_consumer:
+    container_name: test_consumer
+    networks:
+      - household-network
+    build: spark/test_worker
+    depends_on:
+      - zookeeper
+      - kafka
+      - kafka2
+      - kafka3
+      - sensor_heater
