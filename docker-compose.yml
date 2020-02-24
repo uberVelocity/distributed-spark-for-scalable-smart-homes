@@ -19,7 +19,7 @@ services:
   db-interface:
     container_name: dbinterface
     restart: always
-    build: sensors/db_interface
+    build: cassandra/db_interface
     ports:
       - 4004:4004
     networks:
