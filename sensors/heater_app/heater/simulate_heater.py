@@ -18,7 +18,6 @@ def on_send_error(excp):
 
 if __name__ == '__main__':
     sleep(15)
-    print('I GOT WOKE')
     watt_params = {
         'base': 1500,
         'variance': 20,

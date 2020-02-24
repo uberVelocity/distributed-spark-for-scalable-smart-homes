@@ -12,12 +12,12 @@ const clientOptions = {
 };
 let cassandraClient = new cassandra.Client(clientOptions);
 
-const insertRandomQuery = 'INSERT INTO householdcompaction(appliance, ts, value) VALUES(?, ?, ?)';
+const insertHeaterQuery = 'INSERT INTO heatersensor(id, ts, gw, temp) VALUES(?, ?, ?, ?)';
 module.exports = class PackageService {
     static async consumeRandom(randomConsumption) {
         const timeStamp = randomConsumption[0];
         const value = randomConsumption[1];
-        const appliance = 'light bulb';  // To be replaced by actual appliance name
+        const id = 'light bulb';  // To be replaced by actual appliance name
 
         const params = [appliance, timeStamp, value];
         PackageService.insertData(insertRandomQuery, params);
@@ -28,12 +28,15 @@ module.exports = class PackageService {
         // Commit data to Cassandra DB
         cassandraClient = new cassandra.Client(clientOptions);
 
-        console.log(`attempting to insert ${data} using ${query}`);
-        cassandraClient.execute(query, data, {prepare: true}, (err) => {
-        if(err) {
-            console.log(err);
+        if (query == 'heater') {
+            query = insertHeaterQuery;
+            console.log(`attempting to insert ${data} using ${query}`);
+            cassandraClient.execute(query, data, {prepare: true}, (err) => {
+                if(err) {
+                    console.log(err);
+                }
+            });
         }
-    });
-  }
-} 
+    }
+}
 

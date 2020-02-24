@@ -28,7 +28,19 @@ setTimeout(() => {
                     partition,
                     offset: message.offset,
                     value: message.value.toString(),
-                })
+                });
+                
+                const id = JSON.parse(message.value.toString())["id"];
+                const ts = JSON.parse(message.value.toString())["timestamp"];
+                const gw = JSON.parse(message.value.toString())["sensors"]["wattage"];
+                const temp = JSON.parse(message.value.toString())["sensors"]["temperature"];
+                params = [id, ts, gw, temp];
+                console.log(`parameters to be inserted = ${params}`);
+
+
+                // console.log(`params: [${id} ${ts} ${gw} ${temp}]`);
+                // console.log('inserting message into cassandra');
+                PackageService.insertData('heater', params);
             }
         });
     }
