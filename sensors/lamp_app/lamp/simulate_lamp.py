@@ -3,6 +3,7 @@ from time import sleep
 from datetime import datetime
 from json import dumps
 from kafka import KafkaProducer
+from kafka.errors import NoBrokersAvailable
 
 
 def on_send_success(metadata):
@@ -30,11 +31,17 @@ if __name__ == '__main__':
         't_fault': 30
     }
 
-    producer = KafkaProducer(
-        bootstrap_servers=['kafka:29091'],
-        key_serializer=lambda m: str(m).encode(),  # transforms id string to bytes
-        value_serializer=lambda m: dumps(m).encode('ascii')  # transforms messages to json bytes
-    )
+    producer = None
+    while not producer:
+        try:
+            producer = KafkaProducer(
+                bootstrap_servers=['kafka:29091'],
+                key_serializer=lambda m: str(m).encode(),  # transforms id string to bytes
+                value_serializer=lambda m: dumps(m).encode('ascii')  # transforms messages to json bytes
+            )
+        except NoBrokersAvailable:
+            print('No brokers available, sleeping', flush=True)
+            sleep(5)
     lamp = Lamp(watt_params, lumen_params)
 
     t = 0
