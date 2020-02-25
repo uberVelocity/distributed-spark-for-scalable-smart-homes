@@ -13,4 +13,3 @@ either the `db_interface` or the `test_consumer`.
 
 ## System Architecture
 Please find the google slides describing our system architecture [here](https://docs.google.com/presentation/d/1NYL6EoNU3GWoOIYkiPU1ZjK3Hhs6i2bgwzrqqKD7PlU/edit?usp=sharing).
->>>>>>> 8b8d221975883fd1ed016685ede22b1a00fbcbaf
