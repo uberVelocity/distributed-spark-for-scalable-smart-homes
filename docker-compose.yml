@@ -28,7 +28,7 @@ services:
   cassandra-cluster:
     container_name: cassandra-cluster
     restart: always
-    image: cassandra:3.0
+    build: ./cassandra/cassandra_build
     networks:
       - household-network
     volumes:
