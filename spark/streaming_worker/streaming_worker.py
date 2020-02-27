@@ -1,9 +1,8 @@
-import spark
-from time import sleep
+from pyspark.sql import SparkSession
 
 if __name__ == '__main__':
-    sleep(30)
-
+    print('Started script')
+    spark = SparkSession.builder.appName("SimpleApp").getOrCreate()
     df = spark \
         .readStream \
         .format("kafka") \
@@ -12,4 +11,6 @@ if __name__ == '__main__':
         .load()
     df.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
 
+    print('showing df')
     df.show(n=2)
+    spark.stop()
