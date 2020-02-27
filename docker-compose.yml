@@ -16,15 +16,8 @@ volumes:
     driver: local
 
 services:
-  db-interface:
-    container_name: dbinterface
-    restart: always
-    build: cassandra/db_interface
-    ports:
-      - 4004:4004
-    networks:
-      - household-network
 
+  # Cassandra infrastructure
   cassandra-cluster:
     container_name: cassandra-cluster
     restart: always
@@ -39,6 +32,16 @@ services:
       - 7199
       - 9042
       - 9160
+  db-interface:
+    container_name: dbinterface
+    restart: always
+    build: cassandra/db_interface
+    ports:
+      - 4004:4004
+    networks:
+      - household-network
+
+  # Kafka infrastructure
   zookeeper:
     image: 'bitnami/zookeeper:3'
     ports:
@@ -100,16 +103,6 @@ services:
       - 'kafka3_data:/bitnami'
     depends_on:
       - zookeeper
-  sensor_heater:
-    container_name: sensor_heater
-    networks:
-      - household-network
-    build: sensors/heater_app
-    depends_on:
-      - zookeeper
-      - kafka
-      - kafka2
-      - kafka3
   kafka_consumer:
     container_name: kafka_consumer
     networks:
@@ -121,6 +114,18 @@ services:
       - kafka2
       - kafka3
       - sensor_heater
+
+  # Sensors
+  sensor_heater:
+    container_name: sensor_heater
+    networks:
+      - household-network
+    build: sensors/heater_app
+    depends_on:
+      - zookeeper
+      - kafka
+      - kafka2
+      - kafka3
 
 # Spark infrastructure
   spark_master:

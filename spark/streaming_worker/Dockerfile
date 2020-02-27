@@ -1,4 +1,4 @@
-FROM bitnami/spark:latest
+FROM bitnami/spark:2
 
 WORKDIR /usr/src/app
 
