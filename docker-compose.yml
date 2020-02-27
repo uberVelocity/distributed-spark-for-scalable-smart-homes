@@ -110,8 +110,8 @@ services:
       - kafka
       - kafka2
       - kafka3
-  test_consumer:
-    container_name: test_consumer
+  kafka_consumer:
+    container_name: kafka_consumer
     networks:
       - household-network
     build: spark/kafka_consumer
@@ -121,3 +121,56 @@ services:
       - kafka2
       - kafka3
       - sensor_heater
+
+# Spark infrastructure
+  spark_master:
+    container_name: spark_master
+    networks:
+      - household-network
+    image: bitnami/spark:2
+    environment:
+      - SPARK_MODE=master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+    ports:
+      - '8080:8080'
+  spark-worker-1:
+    image: bitnami/spark:2
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark_master:7077
+      - SPARK_WORKER_MEMORY=1G
+      - SPARK_WORKER_CORES=1
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+  spark-worker-2:
+    image: bitnami/spark:2
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark_master:7077
+      - SPARK_WORKER_MEMORY=1G
+      - SPARK_WORKER_CORES=1
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+
+# Spark consumer
+  spark_streaming_consumer:
+    container_name: spark_streaming_container
+    networks:
+      - household-network
+    build: spark/streaming_worker
+    depends_on:
+      - zookeeper
+      - kafka
+      - kafka2
+      - kafka3
+      - sensor_heater
+      - spark_master
+      - spark-worker-1
+      - spark-worker-2
