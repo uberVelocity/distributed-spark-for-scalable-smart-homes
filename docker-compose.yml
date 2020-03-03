@@ -132,7 +132,7 @@ services:
     container_name: spark-master
     networks:
       - household-network
-    image: bitnami/spark:2.4.5
+    build: spark/spark_master/
     environment:
       - SPARK_MODE=master
       - SPARK_RPC_AUTHENTICATION_ENABLED=no
@@ -168,7 +168,7 @@ services:
       - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
       - SPARK_SSL_ENABLED=no
   spark:
-    image: bitnami/spark:2.4.5
+    build: spark/streaming_worker/
     container_name: 'spark'
     environment:
       - SPARK_MODE=master
