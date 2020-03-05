@@ -69,6 +69,6 @@ if __name__ == '__main__':
         }
 
         # Stream data and and sleep for 4 seconds between update.
-        producer.send('historical', key=heater.id, value=msg).add_callback(on_send_success).add_errback(on_send_error)
+        producer.send('sensor_data', key=heater.id, value=msg).add_callback(on_send_success).add_errback(on_send_error)
         t += 1
         sleep(4)
