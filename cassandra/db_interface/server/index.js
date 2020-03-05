@@ -19,7 +19,7 @@ setTimeout(() => {
     const run = async() => {
         await consumer.connect()
         console.log(`connected to ${kafka.PORT}`)
-        await consumer.subscribe({topic: 'historical', fromBeginning: true});
+        await consumer.subscribe({topic: 'sensor_data', fromBeginning: true});
         
         await consumer.run({
             eachMessage: async ({topic, partition, message}) => {

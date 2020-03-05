@@ -5,9 +5,9 @@ if __name__ == '__main__':
     spark = SparkSession.builder.appName("SimpleApp").getOrCreate()
     df = spark \
         .readStream \
-        .format("kafka") \
+        .format("") \
         .option("kafka.bootstrap.servers", "kafka:29091,kafka2:29092") \
-        .option("subscribe", "historical") \
+        .option("subscribe", "sensor_data") \
         .load()
     df.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
 
