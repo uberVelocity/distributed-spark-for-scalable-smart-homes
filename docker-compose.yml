@@ -16,7 +16,6 @@ volumes:
     driver: local
 
 services:
-
   # Cassandra infrastructure
   cassandra-cluster:
     container_name: cassandra-cluster
@@ -41,7 +40,7 @@ services:
     networks:
       - household-network
 
-  # Kafka infrastructure
+  # Zookeeper
   zookeeper:
     container_name: zookeeper
     image: 'bitnami/zookeeper:3'
@@ -53,6 +52,8 @@ services:
       - ALLOW_ANONYMOUS_LOGIN=yes
     networks:
       - household-network
+
+  # Kafka infrastructure 
   kafka:
     image: 'bitnami/kafka:2'
     container_name: kafka_1
@@ -72,6 +73,7 @@ services:
       - 'kafka2_data:/bitnami'
     depends_on:
       - zookeeper
+
   kafka2:
     container_name: kafka_2
     image: 'bitnami/kafka:2'
@@ -90,6 +92,7 @@ services:
       - 'kafka_data:/bitnami'
     depends_on:
       - zookeeper
+
   kafka3:
     image: 'bitnami/kafka:2'
     container_name: kafka_3
@@ -108,6 +111,8 @@ services:
       - 'kafka3_data:/bitnami'
     depends_on:
       - zookeeper
+
+  # Streaming consumer (not in Spark, but in python)
   kafka_consumer:
     container_name: kafka_consumer
     networks:
@@ -168,6 +173,7 @@ services:
       - SPARK_SSL_ENABLED=no
     ports:
       - '7077:7077'
+
   spark-worker-1:
     container_name: spark_worker_1
     image: bitnami/spark:2.4.5
@@ -182,6 +188,7 @@ services:
       - SPARK_RPC_ENCRYPTION_ENABLED=no
       - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
       - SPARK_SSL_ENABLED=no
+
   spark-worker-2:
     container_name: spark_worker_2
     image: bitnami/spark:2.4.5
@@ -196,6 +203,8 @@ services:
       - SPARK_RPC_ENCRYPTION_ENABLED=no
       - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
       - SPARK_SSL_ENABLED=no
+
+  # Spark node used for submitting pyspark applications
   spark:
     build: spark/streaming_worker/
     container_name: 'spark'
