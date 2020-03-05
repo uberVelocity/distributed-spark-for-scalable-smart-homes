@@ -132,6 +132,28 @@ services:
       - kafka2
       - kafka3
 
+  sensor_lamp:
+    container_name: sensor_lamp
+    networks:
+      - household-network
+    build: sensors/lamp_app
+    depends_on:
+      - zookeeper
+      - kafka
+      - kafka2
+      - kafka3
+
+  sensor_vacuum:
+    container_name: sensor_vacuum
+    networks:
+      - household-network
+    build: sensors/vacuum_app
+    depends_on:
+      - zookeeper
+      - kafka
+      - kafka2
+      - kafka3
+
 # Spark infrastructure
   spark-master:
     container_name: spark-master

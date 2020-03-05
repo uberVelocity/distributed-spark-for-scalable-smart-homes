@@ -23,24 +23,36 @@ setTimeout(() => {
         
         await consumer.run({
             eachMessage: async ({topic, partition, message}) => {
-                // For each message, you might want to insert it into the db.
                 console.log({
                     partition,
                     offset: message.offset,
                     value: message.value.toString(),
                 });
-                
+                let params;
+                let sensor;
                 const id = JSON.parse(message.value.toString())["id"];
                 const ts = JSON.parse(message.value.toString())["timestamp"];
                 const gw = JSON.parse(message.value.toString())["sensors"]["wattage"];
-                const temp = JSON.parse(message.value.toString())["sensors"]["temperature"];
-                params = [id, ts, gw, temp];
-                console.log(`parameters to be inserted = ${params}`);
-
-
-                // console.log(`params: [${id} ${ts} ${gw} ${temp}]`);
-                // console.log('inserting message into cassandra');
-                PackageService.insertData('heater', params);
+                
+                if (message.value.toString().includes("temperature")) {
+                    const temp = JSON.parse(message.value.toString())["sensors"]["temperature"];
+                    params = [id, ts, gw, temp];
+                    sensor = 'heater';
+                    console.log(`Heater message to be inserted = ${params}`);
+                }
+                else if (message.value.toString().includes("lumen")) {
+                    const lumen = JSON.parse(message.value.toString())["sensors"]["lumen"];
+                    params = [id, ts, gw, lumen];
+                    sensor = 'lamp';
+                    console.log(`Lamp message to be inserted = ${params}`);
+                }
+                else if (message.value.toString().includes("suction")) {
+                    const suction = JSON.parse(message.value.toString())["sensors"]["suction"];
+                    params = [id, ts, gw, suction];
+                    sensor = 'vacuum';
+                    console.log(`Vacuum message to be inserted = ${params}`);
+                }
+                PackageService.insertData(sensor, params);
             }
         });
     }

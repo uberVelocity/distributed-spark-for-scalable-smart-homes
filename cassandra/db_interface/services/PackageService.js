@@ -13,30 +13,35 @@ const clientOptions = {
 let cassandraClient = new cassandra.Client(clientOptions);
 
 const insertHeaterQuery = 'INSERT INTO heatersensor(id, ts, gw, temp) VALUES(?, ?, ?, ?)';
+const insertLampQuery = 'INSERT INTO lampsensor(id, ts, gw, lumen) VALUES(?, ?, ?, ?)';
+const insertVacuumQuery = 'INSERT INTO vacuumsensor(id, ts, gw, suction) VALUES(?, ?, ?, ?)';
+
 module.exports = class PackageService {
-    static async consumeRandom(randomConsumption) {
-        const timeStamp = randomConsumption[0];
-        const value = randomConsumption[1];
-        const id = 'light bulb';  // To be replaced by actual appliance name
-
-        const params = [appliance, timeStamp, value];
-        PackageService.insertData(insertRandomQuery, params);
-    }
-
     // Commit sensory data to Cassandra Cluster
     static async insertData(query, data) {
         // Commit data to Cassandra DB
         cassandraClient = new cassandra.Client(clientOptions);
-
-        if (query == 'heater') {
-            query = insertHeaterQuery;
-            console.log(`attempting to insert ${data} using ${query}`);
-            cassandraClient.execute(query, data, {prepare: true}, (err) => {
-                if(err) {
-                    console.log(err);
-                }
-            });
+        
+        switch(query) {
+            case 'heater':
+                query = insertHeaterQuery;
+                break;
+            case 'lamp':
+                query = insertLampQuery;
+                break;
+            case 'vacuum':
+                query = insertVacuumQuery;
+                break;
+            default:
+                console.log(`Invalid query = ${query}.`);        
         }
+        console.log(`attempting to insert ${data} using ${query}`);
+        cassandraClient.execute(query, data, {prepare: true}, (err) => {
+            if(err) {
+                console.log(err);
+            }
+        });
+        
     }
 }
 

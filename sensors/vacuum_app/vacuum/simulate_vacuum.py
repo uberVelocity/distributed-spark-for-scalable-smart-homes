@@ -18,6 +18,7 @@ def on_send_error(excp):
 
 
 if __name__ == '__main__':
+    sleep(15)
     watt_params = {
         'base': 6,
         'variance': 0.2,
