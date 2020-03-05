@@ -9,7 +9,7 @@ if __name__ == '__main__':
     while not consumer:  # Continuously try to connect to broker
         try:
             # To consume latest messages and auto-commit offsets
-            consumer = KafkaConsumer('historical',
+            consumer = KafkaConsumer('sensor_data',
                                      group_id='spark_test_worker',
                                      bootstrap_servers=['kafka:29091'],
                                      key_deserializer=lambda m: m.decode(),
