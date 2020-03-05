@@ -16,6 +16,7 @@ volumes:
     driver: local
 
 services:
+
   # Cassandra infrastructure
   cassandra-cluster:
     container_name: cassandra-cluster
@@ -31,6 +32,8 @@ services:
       - 7199
       - 9042
       - 9160
+
+  # Inserts data into cassandra
   db-interface:
     container_name: dbinterface
     restart: always
