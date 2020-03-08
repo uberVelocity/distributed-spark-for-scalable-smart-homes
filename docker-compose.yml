@@ -212,7 +212,7 @@ services:
 
   # Spark node used for submitting pyspark applications
   spark:
-    build: spark/streaming_worker/
+    build: spark/ml/
     container_name: 'spark'
     environment:
       - SPARK_MODE=master
