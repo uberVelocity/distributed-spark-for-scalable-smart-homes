@@ -11,7 +11,8 @@ if __name__ == '__main__':
         .option("subscribe", "sensor_data") \
         .load()
     dataframe = df.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
-
-    query = df.writeStream.format("console").start() # Print the stream
-    time.sleep(10) # sleep 10 seconds
+    
+    # Print the stream for 10 seconds
+    query = df.writeStream.format("console").start() 
+    time.sleep(10)
     query.stop()
