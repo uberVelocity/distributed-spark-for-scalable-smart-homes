@@ -56,12 +56,12 @@ export default {
       this.$router.push('/');
     },
     async showHeater() {
-      const gwConsumption = await HistoryService.getHeater();
-      this.timeStamps = gwConsumption.data.ts;
-      this.values = gwConsumption.data.values;
+      const heaterHistory = await HistoryService.getHeater();
+      this.timeStamps = heaterHistory.data.ts;
+      this.values = heaterHistory.data.values;
 
-      this.formatTimeStamps(gwConsumption.data.timeStamps);
-      this.formatValues(gwConsumption.data.values);
+      this.formatTimeStamps(heaterHistory.data.timeStamps);
+      this.formatValues(heaterHistory.data.values);
     },
     formatTimeStamps(data) {
       this.timeStampText = '';

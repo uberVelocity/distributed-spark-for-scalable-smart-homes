@@ -1,19 +1,20 @@
 import axios from 'axios';
 
-const url = "http://localhost:4002/api/history/";
+const url = "http://history:4002/api/history/";
 
 class HistoryService {
 
     static async getHeater() {
-        return await axios.post(`${url}heater`);
+        alert(url + 'heater');
+        return await axios.get(`${url}heater`);
     }
 
     static async getLamp() {
-        return await axios.post(`${url}lamp`);
+        return await axios.get(`${url}lamp`);
     }
 
     static async getVacuum() {
-        return await axios.post(`${url}vacuum`);
+        return await axios.get(`${url}vacuum`);
     }
 
 }
