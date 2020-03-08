@@ -5,12 +5,9 @@ if __name__ == '__main__':
     spark = SparkSession.builder.appName("SimpleApp").getOrCreate()
     df = spark \
         .readStream \
-        .format("") \
+        .format("kafka") \
         .option("kafka.bootstrap.servers", "kafka:29091,kafka2:29092") \
         .option("subscribe", "sensor_data") \
         .load()
     df.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
-
-    print('showing df')
-    df.show(n=2)
-    spark.stop()
+    
