@@ -224,3 +224,23 @@ services:
       - '8080:8080'
     networks:
       - household-network
+  
+  # Frontend
+  frontend:
+    container_name: frontend
+    restart: always
+    build: frontend/household-view
+    ports:
+      - '80:80'
+    networks:
+      - household-network
+
+  # Service that retrieves sensor information from cassandra
+  history-retriever:
+    container_name: history
+    restart: always
+    build: history_retriever
+    ports:
+      - '4002:4002'
+    networks:
+      - household-network
