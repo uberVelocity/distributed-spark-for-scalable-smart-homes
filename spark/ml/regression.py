@@ -1,6 +1,6 @@
 import os
 
-from pyspark import SparkContext
+from pyspark import SparkContext, SparkConf
 from pyspark.sql import SQLContext
 
 
@@ -20,7 +20,10 @@ def load_and_get_table_df(keys_space_name, table_name):
 
 if __name__ == '__main__':
 
-    spark_context = SparkContext(appName='regression')  # spark-master, appName
+    spark_config = SparkConf()
+    spark_config.set('spark.cassandra.connection.host', 'cassandra-cluster')
+
+    spark_context = SparkContext(appName='regression', conf=spark_config)
     sql_context = SQLContext(spark_context)  # needed to be able to query data.
 
     heaters = load_and_get_table_df('household', 'heatersensor')
