@@ -4,8 +4,7 @@
 For now we have a data production and consumption demo. This can be ran using:
 
 ```shell script
-docker-compose build --no-cache
-docker-compose up
+docker-compose up --build
 ```
 
 `sensor_heater` will produce updates for the simulated appliance. These are passed to Kafka and then consumed by
