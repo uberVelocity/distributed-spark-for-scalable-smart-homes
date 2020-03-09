@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka
+spec:
+  containers:
+  - name: kafka
+    image: bitnami/kafka:2
+    env:
+    - name: KAFKA_CFG_ZOOKEEPER_CONNECT
+      value: "zookeeper:2181"
+    - name: ALLOW_PLAINTEXT_LISTENER
+      value: "yes"
+    - name: KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP
+      value: "PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT"
+    - name: KAFKA_CFG_LISTENERS
+      value: "PLAINTEXT://:9091,PLAINTEXT_HOST://:29091"
+    - name: KAFKA_CFG_ADVERTISED_LISTENERS
+      value: "PLAINTEXT://kafka:9091,PLAINTEXT_HOST://kafka:29091"
+    - name: KAFKA_CFG_DEFAULT_REPLICATION_FACTOR
+      value: "3"
+    ports:
+      - containerPort: 29091
+    type: LoadBalancer

@@ -118,6 +118,18 @@ services:
     depends_on:
       - zookeeper
 
+  kafka_manager:
+    container_name: kafka_manager
+    image: sheepkiller/kafka-manager
+    restart: always
+    ports: 
+      - '9000:9000'
+    networks:
+      - household-network
+    environment:
+      - ZK_HOSTS=zookeeper:2181
+
+
   # Streaming consumer (not in Spark, but in python)
   kafka_consumer:
     container_name: kafka_consumer
@@ -212,7 +224,7 @@ services:
 
   # Spark node used for submitting pyspark applications
   spark:
-    build: spark/ml/
+    build: spark/streaming_worker/
     container_name: 'spark'
     environment:
       - SPARK_MODE=master
@@ -224,3 +236,25 @@ services:
       - '8080:8080'
     networks:
       - household-network
+  
+  # Frontend
+  frontend:
+    container_name: frontend
+    restart: always
+    build: frontend/household-view
+    ports:
+      - '80:80'
+    networks:
+      - household-network
+
+  # Service that retrieves sensor information from cassandra
+  history-retriever:
+    container_name: history
+    restart: always
+    build: history_retriever
+    ports:
+      - '4002:4002'
+    networks:
+      - household-network
+
+  
