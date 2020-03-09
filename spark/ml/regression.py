@@ -2,7 +2,7 @@ import os
 
 from pyspark import SparkContext, SparkConf
 from pyspark.sql import SQLContext
-
+from pyspark.sql.functions import mean as _mean, stddev as _stddev, col
 
 def load_and_get_table_df(keys_space_name, table_name):
     """
@@ -27,6 +27,18 @@ if __name__ == '__main__':
     sql_context = SQLContext(spark_context)  # needed to be able to query data.
 
     heaters = load_and_get_table_df('household', 'heatersensor')
+
+    # Store the average of the "temperature" column
+    df_stats = heaters.select(
+    _mean(col('temp')).alias('mean'),
+    _stddev(col('temp')).alias('std')
+    ).collect()
+
+    mean = df_stats[0]['mean']
+    std = df_stats[0]['std']
+
+    z_scores = heaters.map(lambda x: (x["temp"], (x["temp"] - mean) / std))
+    print('Z_SCORES: ', z_scores)
 
     heaters.show()
     spark_context.stop()
