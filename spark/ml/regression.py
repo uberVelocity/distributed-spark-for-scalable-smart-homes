@@ -21,9 +21,9 @@ def load_and_get_table_df(keys_space_name, table_name):
 if __name__ == '__main__':
     os.environ['PYSPARK_SUBMIT_ARGS'] = '--master spark://spark-master:7077 ' \
                                         '--packages com.datastax.spark:spark-cassandra-connector_2.11:2.4.2 ' \
-                                        '--conf spark.cassandra.connection.host=cassandra-cluster'
+                                        '--conf spark.cassandra.connection.host=cassandra-cluster:9042'
 
-    spark_context = SparkContext('spark-master:7077', 'regression')  # spark-master, appName
+    spark_context = SparkContext(appName='regression')  # spark-master, appName
     sql_context = SQLContext(spark_context)  # needed to be able to query data.
 
     heaters = load_and_get_table_df('household', 'heatersensor')
