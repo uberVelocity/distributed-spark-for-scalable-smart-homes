@@ -17,6 +17,10 @@ def load_and_get_table_df(keys_space_name, table_name):
         .load()
     return table_df
 
+def z_scores(x, mean, std):
+    print(x[0])
+    return (x - mean) / std
+
 
 if __name__ == '__main__':
 
@@ -34,11 +38,22 @@ if __name__ == '__main__':
     _stddev(col('temp')).alias('std')
     ).collect()
 
+    # Compute mean and std
     mean = df_stats[0]['mean']
     std = df_stats[0]['std']
 
-    z_scores = heaters.map(lambda x: (x["temp"], (x["temp"] - mean) / std))
-    print('Z_SCORES: ', z_scores)
+    # Collect all Rows of 'temp' column
+    rows = heaters.select('temp').collect()
+    vals = []
+    for item in rows:
+        vals.append(item[0])
+
+    z_scores = heaters.select('temp').rdd.map(lambda x:((x[0] - mean) / std, 1)).toDF()
+    print('z_scores df: ', z_scores.show())
+    
+    # troublesome = filter(lambda x: x > 0.01, z_scores)
+    # print('FILTER: ', list(troublesome))
 
     heaters.show()
     spark_context.stop()
+
