@@ -23,7 +23,7 @@ if __name__ == '__main__':
     spark_config = SparkConf()
     spark_config.set('spark.cassandra.connection.host', 'cassandra-cluster')
 
-    spark_context = SparkContext(appName='regression', conf=spark_config)
+    spark_context = SparkContext(master='spark://spark-master:7077', appName='regression', conf=spark_config)
     sql_context = SQLContext(spark_context)  # needed to be able to query data.
 
     heaters = load_and_get_table_df('household', 'heatersensor')
