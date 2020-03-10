@@ -20,9 +20,38 @@ def load_and_get_table_df(keys_space_name, table_name):
     return table_df
 
 
-def z_scores(x, mean, std):
-    print(x[0])
+def z_score(x, mean, std):
     return (x - mean) / std
+
+
+def convert_to_zscore(df):
+    """
+    Converts a DataFrame to z score values.
+    :param df: DataFrame to be converted
+    :return: An RDD (!) containing the transformed column.
+    """
+
+    means = {}
+    stds = {}
+
+    for column in df.schema.names[2:]:  # leave out the first two columns
+        df_stats = df.select(
+            _mean(col(column)).alias('mean'),
+            _stddev(col(column)).alias('std')
+        ).collect()
+
+        means[column] = df_stats[0]['mean']
+        stds[column] = df_stats[0]['std']
+
+    transformed = df.rdd.map(lambda x: (x[0],
+                                        x[1],
+                                        z_score(x[2], means['gw'], stds['gw']),
+                                        z_score(x[3], means['temp'], stds['temp'])
+                                        )
+                             ).toDF(heaters.schema.names)
+    transformed.show(n=5)
+
+    return transformed
 
 
 if __name__ == '__main__':
@@ -34,25 +63,12 @@ if __name__ == '__main__':
     sql_context = SQLContext(spark_context)  # needed to be able to query data.
 
     heaters = load_and_get_table_df('household', 'heatersensor')
+    heaters.show(n=5)
 
-    heater_stats = heaters.groupBy('id').agg(f.mean('temp').alias('mean'), f.stddev('temp').alias('std')).show()
+    heaters = convert_to_zscore(heaters)
 
-    #
-    # # Set z-score threshold
-    # threshold = 0.4
-    #
-    # # Compute z-scores of 'temp' column
-    # z_scores = heaters.select('temp').rdd.map(lambda x:((x[0] - mean) / std, 1)).toDF()
-    # print('z_scores df: ', z_scores.show())
-    #
-    # # Filter z-scores values above threshold
-    # filtered = z_scores.filter(f.col('_1') > threshold)
-    # print('FILTER: ', filtered.show())
-    #
-    # # Reduce (count how many)
-    # reduced = filtered.rdd.reduce(lambda a, b: ('sum', a[1] + b[1]))[1]
-    # print('REDUCED: ', reduced)
-    
+    # heaters = heaters.select(col('id'), col('ts')).join(compute_column_zscore(heaters, 'gw'), ['gw'])
+
     # Finish
     spark_context.stop()
 
