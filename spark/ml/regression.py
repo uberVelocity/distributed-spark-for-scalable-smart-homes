@@ -3,7 +3,6 @@ import os
 from pyspark import SparkContext, SparkConf
 from pyspark.sql import SQLContext
 from pyspark.sql.functions import mean as _mean, stddev as _stddev, col
-import pyspark.sql.functions as f
 
 
 def load_and_get_table_df(keys_space_name, table_name):
@@ -65,8 +64,7 @@ if __name__ == '__main__':
     heaters.show(n=5)
 
     heaters = convert_to_zscore(heaters)
-
-    # heaters = heaters.select(col('id'), col('ts')).join(compute_column_zscore(heaters, 'gw'), ['gw'])
+    heaters.show()
 
     # Finish
     spark_context.stop()
