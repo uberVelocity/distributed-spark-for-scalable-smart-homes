@@ -48,8 +48,7 @@ def convert_to_zscore(df):
                                         z_score(x[2], means['gw'], stds['gw']),
                                         z_score(x[3], means['temp'], stds['temp'])
                                         )
-                             ).toDF(heaters.schema.names)
-    transformed.show(n=5)
+                             ).toDF(df.schema.names)
 
     return transformed
 
