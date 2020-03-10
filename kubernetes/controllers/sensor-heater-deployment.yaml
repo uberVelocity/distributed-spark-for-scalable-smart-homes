@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sensor-heater
+  labels:
+    app: sensor-heater
+spec:
+  # replicas: 3
+  selector:
+    matchLabels:
+      app: sensor-heater
+  template:
+    metadata:
+      labels:
+        app: sensor-heater
+    spec:
+      containers:
+      - name: sensor-heater
+        image: ubervelocity/sensor_heater:latest

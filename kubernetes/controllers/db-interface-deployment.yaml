@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db-interface
+  labels:
+    app: db-interface
+spec:
+  # replicas: 3
+  selector:
+    matchLabels:
+      app: db-interface
+  template:
+    metadata:
+      labels:
+        app: db-interface
+    spec:
+      containers:
+      - name: db-interface
+        image: ubervelocity/db-interface:latest
+        ports:
+        - containerPort: 4000
