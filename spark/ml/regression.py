@@ -1,5 +1,3 @@
-import os
-
 from pyspark import SparkContext, SparkConf
 from pyspark.sql import SQLContext
 from pyspark.sql.functions import mean as _mean, stddev as _stddev, col
