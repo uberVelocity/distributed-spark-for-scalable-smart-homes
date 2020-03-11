@@ -27,7 +27,7 @@ def convert_to_zscore(df):
     """
     Converts a DataFrame to z score values.
     :param df: DataFrame to be converted
-    :return: An RDD (!) containing the transformed column.
+    :return: A DataFrame containing the transformed table.
     """
 
     means = {}
@@ -35,15 +35,16 @@ def convert_to_zscore(df):
 
     for column in df.schema.names[2:]:  # leave out the first two columns
         df_stats = df.select(
-            _mean(col(column)).alias('mean'),
-            _stddev(col(column)).alias('std')
+            _mean(col(column)).alias('mean'),  # Compute mean for column
+            _stddev(col(column)).alias('std')  # Compute std for column
         ).collect()
 
         means[column] = df_stats[0]['mean']
         stds[column] = df_stats[0]['std']
 
-    cols = df.schema.names[2:]
+    cols = df.schema.names[2:]  # Needs to be specified here, otherwise references to names not available.
 
+    # RDD used to distribute task
     transformed = df.rdd.map(lambda x: (x[0],
                                         x[1],
                                         z_score(x[2], means[cols[0]], stds[cols[0]]),
