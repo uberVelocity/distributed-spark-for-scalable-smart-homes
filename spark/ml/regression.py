@@ -42,13 +42,12 @@ def convert_to_zscore(df):
         means[column] = df_stats[0]['mean']
         stds[column] = df_stats[0]['std']
 
-    col2 = df.schema.names[2]
-    col3 = df.schema.names[3]
+    cols = df.schema.names[2:]
 
     transformed = df.rdd.map(lambda x: (x[0],
                                         x[1],
-                                        z_score(x[2], means[col2], stds[col2]),
-                                        z_score(x[3], means[col3], stds[col3])
+                                        z_score(x[2], means[cols[0]], stds[cols[0]]),
+                                        z_score(x[3], means[cols[1]], stds[cols[1]])
                                         )
                              ).toDF(df.schema.names)
 
