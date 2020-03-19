@@ -6,4 +6,4 @@ COPY . .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-CMD [ "python", "./sensor/simulate_heater.py" ]
+CMD [ "python", "./simulate_heater.py" ]
