@@ -1,4 +1,4 @@
-from heater import Heater
+from sensor import Sensor
 from time import sleep
 from datetime import datetime
 from json import dumps
@@ -18,18 +18,18 @@ def on_send_error(excp):
 
 
 if __name__ == '__main__':
-    sleep(15)
     watt_params = {
-        'base': 1500,
-        'variance': 20,
+        'a': 12,
+        'b': 1500,
+        'variance': 10,
         'limit': 2000
     }
 
     temp_params = {
-        'base': 22,
-        'variance': 0.2,
+        'a': -0.04,
+        'b': 22,
+        'variance': 0.1,
         'limit': 20,
-        't_fault': 10
     }
 
     producer = None
@@ -44,19 +44,25 @@ if __name__ == '__main__':
             print('No brokers available, sleeping', flush=True)
             sleep(5)
 
-    heater = Heater(watt_params, temp_params)
+    heater = Sensor(watt_params, temp_params)
+
+    watts = []
+    temps = []
 
     t = 0
     while True:
-        if t == 50 or not heater.on_state:   # break when appliance is broken or enough time has passed
+        if t == 50 or not heater.on:   # break when appliance is broken or enough time has passed
             break
 
         timestamp = datetime.utcnow().timestamp()
-        watts = heater.compute_wattage(t)
-        temperature = heater.compute_heater(t)
+        wattage = heater.compute_var1(t)
+        temperature = heater.compute_var2(t)
+
+        watts.append(wattage)
+        temps.append(temperature)
 
         print(f"Device {heater.id}: time({t}) = {timestamp}", flush=True)
-        print(f"Device {heater.id}: wattage({t}) = {watts}")
+        print(f"Device {heater.id}: wattage({t}) = {wattage}")
         print(f"Device {heater.id}: temperature({t}) = {temperature}")
 
         msg = {
@@ -64,11 +70,14 @@ if __name__ == '__main__':
             'timestamp': timestamp,
             'sensors': {
                 'temperature': temperature,
-                'wattage': watts,
+                'wattage': wattage,
             }
         }
+
+        print(msg)
 
         # Stream data and and sleep for 4 seconds between update.
         producer.send('sensor_data', key=heater.id, value=msg).add_callback(on_send_success).add_errback(on_send_error)
         t += 1
         sleep(4)
+
