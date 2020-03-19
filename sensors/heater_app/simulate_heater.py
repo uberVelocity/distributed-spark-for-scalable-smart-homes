@@ -46,9 +46,6 @@ if __name__ == '__main__':
 
     heater = Sensor(watt_params, temp_params)
 
-    watts = []
-    temps = []
-
     t = 0
     while True:
         if t == 50 or not heater.on:   # break when appliance is broken or enough time has passed
@@ -57,9 +54,6 @@ if __name__ == '__main__':
         timestamp = datetime.utcnow().timestamp()
         wattage = heater.compute_var1(t)
         temperature = heater.compute_var2(t)
-
-        watts.append(wattage)
-        temps.append(temperature)
 
         print(f"Device {heater.id}: time({t}) = {timestamp}", flush=True)
         print(f"Device {heater.id}: wattage({t}) = {wattage}")
