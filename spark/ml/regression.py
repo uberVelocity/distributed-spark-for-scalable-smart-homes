@@ -62,6 +62,8 @@ if __name__ == '__main__':
     sql_context = SQLContext(spark_context)  # needed to be able to query data.
 
     heaters = load_and_get_table_df('household', 'heatersensor')
+    heaters.show()
+
     heaters = convert_to_zscore(heaters)
     heaters.show()
 
