@@ -32,8 +32,8 @@ services:
       - 7199
       - 9042
       - 9160
-    logging:
-      driver: "none"
+    # logging:
+    #   driver: "none"
 
   # Inserts data into cassandra
   db-interface:
@@ -44,8 +44,8 @@ services:
       - 4004:4004
     networks:
       - household-network
-    logging:
-      driver: "none"
+    # logging:
+    #   driver: "none"
 
   # Zookeeper
   zookeeper:
@@ -59,8 +59,8 @@ services:
       - ALLOW_ANONYMOUS_LOGIN=yes
     networks:
       - household-network
-    logging:
-      driver: "none"
+    # logging:
+    #   driver: "none"
 
   # Kafka infrastructure 
   kafka:
@@ -83,8 +83,8 @@ services:
       - 'kafka2_data:/bitnami'
     depends_on:
       - zookeeper
-    logging:
-      driver: "none"
+    # logging:
+    #   driver: "none"
 
   kafka2:
     container_name: kafka_2
@@ -105,8 +105,8 @@ services:
       - 'kafka_data:/bitnami'
     depends_on:
       - zookeeper
-    logging:
-      driver: "none"
+    # logging:
+    #   driver: "none"
 
   kafka3:
     image: 'bitnami/kafka:2'
@@ -127,8 +127,8 @@ services:
       - 'kafka3_data:/bitnami'
     depends_on:
       - zookeeper
-    logging:
-      driver: "none"
+    # logging:
+    #   driver: "none"
 
   kafka_manager:
     container_name: kafka_manager
@@ -140,8 +140,8 @@ services:
       - household-network
     environment:
       - ZK_HOSTS=zookeeper:2181
-    logging:
-      driver: "none"
+    # logging:
+    #   driver: "none"
 
 
   # Streaming consumer (not in Spark, but in python)
@@ -156,8 +156,8 @@ services:
       - kafka2
       - kafka3
       - sensor_heater
-    logging:
-      driver: "none"
+    # logging:
+    #   driver: "none"
 
   # Sensors
   sensor_heater:
@@ -170,8 +170,8 @@ services:
       - kafka
       - kafka2
       - kafka3
-    logging:
-      driver: "none"
+    # logging:
+    #   driver: "none"
 
   sensor_lamp:
     container_name: sensor_lamp
@@ -183,8 +183,8 @@ services:
       - kafka
       - kafka2
       - kafka3
-    logging:
-      driver: "none"
+    # logging:
+    #   driver: "none"
 
   sensor_vacuum:
     container_name: sensor_vacuum
@@ -196,8 +196,8 @@ services:
       - kafka
       - kafka2
       - kafka3
-    logging:
-      driver: "none"
+    # logging:
+    #   driver: "none"
 
 # Spark infrastructure
   spark-master:
@@ -269,8 +269,8 @@ services:
       - '80:80'
     networks:
       - household-network
-    logging:
-      driver: "none"
+    # logging:
+    #   driver: "none"
 
   # Service that retrieves sensor information from cassandra
   history-retriever:
@@ -281,7 +281,7 @@ services:
       - '4002:4002'
     networks:
       - household-network
-    logging:
-      driver: "none"
+    # logging:
+    #   driver: "none"
 
   
