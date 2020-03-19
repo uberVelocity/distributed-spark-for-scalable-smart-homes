@@ -6,4 +6,4 @@ COPY . .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-CMD [ "python", "./lamp/simulate_lamp.py" ]
+CMD [ "python", "./simulate_lamp.py" ]

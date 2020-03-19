@@ -1,4 +1,4 @@
-from lamp import Lamp
+from sensor import Sensor
 from time import sleep
 from datetime import datetime
 from json import dumps
@@ -18,18 +18,18 @@ def on_send_error(excp):
 
 
 if __name__ == '__main__':
-    sleep(15)
     watt_params = {
-        'base': 6,
-        'variance': 0.2,
-        'limit': 10
+        'a': 0.25,
+        'b': 40,
+        'variance': 0.1,
+        'limit': 50
     }
 
     lumen_params = {
-        'base': 110,
-        'variance': 0.2,
-        'limit': 120,
-        't_fault': 30
+        'a': -2.5,
+        'b': 500,
+        'variance': 0.1,
+        'limit': 400,
     }
 
     producer = None
@@ -43,19 +43,20 @@ if __name__ == '__main__':
         except NoBrokersAvailable:
             print('No brokers available, sleeping', flush=True)
             sleep(5)
-    lamp = Lamp(watt_params, lumen_params)
+
+    lamp = Sensor(watt_params, lumen_params)
 
     t = 0
     while True:
-        if t is 50 or lamp.on_state is False:
+        if t == 50 or not lamp.on:   # break when appliance is broken or enough time has passed
             break
 
         timestamp = datetime.utcnow().timestamp()
-        watts = lamp.compute_wattage(t)
-        lumen = lamp.compute_lumen(t)
+        wattage = lamp.compute_var1(t)
+        lumen = lamp.compute_var2(t)
 
-        print(f"Device {lamp.id}: time({t}) = {timestamp}")
-        print(f"Device {lamp.id}: wattage({t}) = {watts}")
+        print(f"Device {lamp.id}: time({t}) = {timestamp}", flush=True)
+        print(f"Device {lamp.id}: wattage({t}) = {wattage}")
         print(f"Device {lamp.id}: lumen({t}) = {lumen}")
 
         msg = {
@@ -63,11 +64,11 @@ if __name__ == '__main__':
             'timestamp': timestamp,
             'sensors': {
                 'lumen': lumen,
-                'wattage': watts,
+                'wattage': wattage,
             }
         }
 
-        # Stream data and and sleep for 4 seconds between updates
+        # Stream data and and sleep for 4 seconds between update.
         producer.send('sensor_data', key=lamp.id, value=msg).add_callback(on_send_success).add_errback(on_send_error)
         t += 1
         sleep(4)
