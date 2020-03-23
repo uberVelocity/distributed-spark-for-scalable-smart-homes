@@ -32,8 +32,8 @@ services:
       - 7199
       - 9042
       - 9160
-    logging:
-      driver: "none"
+#    logging:
+#      driver: "none"
 
   # Inserts data into cassandra
   db-interface:
@@ -44,8 +44,8 @@ services:
       - 4004:4004
     networks:
       - household-network
-    logging:
-      driver: "none"
+#    logging:
+#      driver: "none"
 
   # Zookeeper
   zookeeper:
@@ -143,22 +143,6 @@ services:
     logging:
       driver: "none"
 
-
-  # Streaming consumer (not in Spark, but in python)
-  kafka_consumer:
-    container_name: kafka_consumer
-    networks:
-      - household-network
-    build: spark/kafka_consumer
-    depends_on:
-      - zookeeper
-      - kafka
-      - kafka2
-      - kafka3
-      - sensor_heater
-    logging:
-      driver: "none"
-
   # Sensors
   sensor_heater:
     container_name: sensor_heater
@@ -173,31 +157,31 @@ services:
     logging:
       driver: "none"
 
-  sensor_lamp:
-    container_name: sensor_lamp
-    networks:
-      - household-network
-    build: sensors/lamp_app
-    depends_on:
-      - zookeeper
-      - kafka
-      - kafka2
-      - kafka3
-    logging:
-      driver: "none"
-
-  sensor_vacuum:
-    container_name: sensor_vacuum
-    networks:
-      - household-network
-    build: sensors/vacuum_app
-    depends_on:
-      - zookeeper
-      - kafka
-      - kafka2
-      - kafka3
-    logging:
-      driver: "none"
+#  sensor_lamp:
+#    container_name: sensor_lamp
+#    networks:
+#      - household-network
+#    build: sensors/lamp_app
+#    depends_on:
+#      - zookeeper
+#      - kafka
+#      - kafka2
+#      - kafka3
+#    logging:
+#      driver: "none"
+#
+#  sensor_vacuum:
+#    container_name: sensor_vacuum
+#    networks:
+#      - household-network
+#    build: sensors/vacuum_app
+#    depends_on:
+#      - zookeeper
+#      - kafka
+#      - kafka2
+#      - kafka3
+#    logging:
+#      driver: "none"
 
 # Spark infrastructure
   spark-master:
@@ -260,28 +244,28 @@ services:
     networks:
       - household-network
   
-  # Frontend
-  frontend:
-    container_name: frontend
-    restart: always
-    build: frontend/household-view
-    ports:
-      - '80:80'
-    networks:
-      - household-network
-    logging:
-      driver: "none"
-
-  # Service that retrieves sensor information from cassandra
-  history-retriever:
-    container_name: history
-    restart: always
-    build: history_retriever
-    ports:
-      - '4002:4002'
-    networks:
-      - household-network
-    logging:
-      driver: "none"
+#  # Frontend
+#  frontend:
+#    container_name: frontend
+#    restart: always
+#    build: frontend/household-view
+#    ports:
+#      - '80:80'
+#    networks:
+#      - household-network
+#    logging:
+#      driver: "none"
+#
+#  # Service that retrieves sensor information from cassandra
+#  history-retriever:
+#    container_name: history
+#    restart: always
+#    build: history_retriever
+#    ports:
+#      - '4002:4002'
+#    networks:
+#      - household-network
+#    logging:
+#      driver: "none"
 
   
