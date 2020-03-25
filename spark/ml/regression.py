@@ -2,6 +2,7 @@ from pyspark import SparkContext, SparkConf
 from pyspark.sql import SQLContext
 from pyspark.sql.functions import mean as _mean, stddev as _stddev, col
 
+import pyspark
 
 def load_and_get_table_df(keys_space_name, table_name):
     """
@@ -53,12 +54,24 @@ def convert_to_zscore(df):
     return transformed
 
 
+def partition_time_sync(partition):
+    """
+    Convert each partition's timestamps to seconds since start.
+    :param partition:
+    :return:
+    """
+    pass
+
+
 def get_coefficients(df):
     """
-    Gets the a, b and limit coefficients for later use in prediction.
+    Gets the a, b and limit coefficients per parameter column for use in prediction.
     :param df: DataFrame containing the training data.
     :return: List containing tuples (a, b, max, min) with linear regression coefficients and limits.
     """
+
+    df = df.repartition("id")  # repartition data such that each partition controls only one id.
+    df.foreachPartition(partition_time_sync)
 
     for column in df.schema.names[2:]:
 
