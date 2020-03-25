@@ -53,6 +53,28 @@ def convert_to_zscore(df):
     return transformed
 
 
+def get_coefficients(df):
+    """
+    Gets the a, b and limit coefficients for later use in prediction.
+    :param df: DataFrame containing the training data.
+    :return: List containing tuples (a, b, max, min) with linear regression coefficients and limits.
+    """
+
+    for column in df.schema.names[2:]:
+
+        # -1 values are excluded as these are used as sensor malfunction labeling.
+        max_val = df.filter(column + "> -1").groupby().max(column).first()["max(" + column + ")"]
+        min_val = df.filter(column + "> -1").groupby().min(column).first()["min(" + column + ")"]
+
+        # Print statements together as to not have spark statements clutter debug
+        print()
+        print(column)
+        print("Max: " + str(max_val) + "\nMin: " + str(min_val))
+        print()
+
+    return ''
+
+
 if __name__ == '__main__':
 
     spark_config = SparkConf()
@@ -64,8 +86,10 @@ if __name__ == '__main__':
     heaters = load_and_get_table_df('household', 'heatersensor')
     heaters.show()
 
-    heaters = convert_to_zscore(heaters)
-    heaters.show()
+    parameters = get_coefficients(heaters)
+
+    # heaters = convert_to_zscore(heaters)
+    # heaters.show()
 
     # Finish
     spark_context.stop()
