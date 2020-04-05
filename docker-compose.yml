@@ -80,7 +80,7 @@ services:
       - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9091,PLAINTEXT_HOST://kafka:29091
       - KAFKA_CFG_DEFAULT_REPLICATION_FACTOR=3
     volumes:
-      - 'kafka2_data:/bitnami'
+      - 'kafka_data:/bitnami'
     depends_on:
       - zookeeper
     logging:
@@ -102,7 +102,7 @@ services:
     networks:
       - household-network
     volumes:
-      - 'kafka_data:/bitnami'
+      - 'kafka2_data:/bitnami'
     depends_on:
       - zookeeper
     logging:
