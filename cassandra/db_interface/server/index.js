@@ -63,10 +63,6 @@ setTimeout(() => {
     app.use(cors());
     app.use(express.json());
 
-    const insert = require('../routes/api/insert');
-
-    app.use('/api/insert', insert);
-
     const port = process.env.PORT || 4004;
 
     app.listen(port, () => console.log(`Test sensor started on port ${port}`));
