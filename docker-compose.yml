@@ -80,11 +80,11 @@ services:
       - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9091,PLAINTEXT_HOST://kafka:29091
       - KAFKA_CFG_DEFAULT_REPLICATION_FACTOR=3
     volumes:
-      - 'kafka2_data:/bitnami'
+      - 'kafka_data:/bitnami'
     depends_on:
       - zookeeper
-    logging:
-      driver: "none"
+    # logging:
+    #   driver: "none"
 
   kafka2:
     container_name: kafka_2
@@ -102,11 +102,11 @@ services:
     networks:
       - household-network
     volumes:
-      - 'kafka_data:/bitnami'
+      - 'kafka2_data:/bitnami'
     depends_on:
       - zookeeper
-    logging:
-      driver: "none"
+    # logging:
+    #   driver: "none"
 
   kafka3:
     image: 'bitnami/kafka:2'
@@ -127,8 +127,8 @@ services:
       - 'kafka3_data:/bitnami'
     depends_on:
       - zookeeper
-    logging:
-      driver: "none"
+    # logging:
+    #   driver: "none"
 
   kafka_manager:
     container_name: kafka_manager
@@ -140,8 +140,8 @@ services:
       - household-network
     environment:
       - ZK_HOSTS=zookeeper:2181
-    logging:
-      driver: "none"
+    # logging:
+    #   driver: "none"
 
   # Sensors
   sensor_heater:
@@ -157,31 +157,31 @@ services:
     logging:
       driver: "none"
 
-#  sensor_lamp:
-#    container_name: sensor_lamp
-#    networks:
-#      - household-network
-#    build: sensors/lamp_app
-#    depends_on:
-#      - zookeeper
-#      - kafka
-#      - kafka2
-#      - kafka3
-#    logging:
-#      driver: "none"
-#
-#  sensor_vacuum:
-#    container_name: sensor_vacuum
-#    networks:
-#      - household-network
-#    build: sensors/vacuum_app
-#    depends_on:
-#      - zookeeper
-#      - kafka
-#      - kafka2
-#      - kafka3
-#    logging:
-#      driver: "none"
+  sensor_lamp:
+    container_name: sensor_lamp
+    networks:
+      - household-network
+    build: sensors/lamp_app
+    depends_on:
+      - zookeeper
+      - kafka
+      - kafka2
+      - kafka3
+    logging:
+      driver: "none"
+
+  sensor_vacuum:
+    container_name: sensor_vacuum
+    networks:
+      - household-network
+    build: sensors/vacuum_app
+    depends_on:
+      - zookeeper
+      - kafka
+      - kafka2
+      - kafka3
+    logging:
+      driver: "none"
 
 # Spark infrastructure
   spark-master:
