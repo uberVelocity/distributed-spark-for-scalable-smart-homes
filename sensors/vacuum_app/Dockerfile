@@ -2,8 +2,8 @@ FROM python:3
 
 WORKDIR /usr/src/app
 
-COPY . .
+COPY ../../sensors .
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r sensors/vacuum_app/requirements.txt
 
-CMD [ "python", "./simulate_vacuum.py" ]
+CMD [ "python", "./sensors/heater_app/simulate_vacuum.py" ]
