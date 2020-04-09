@@ -1,9 +1,10 @@
-from sensor import Sensor
 from time import sleep
 from datetime import datetime
 from json import dumps
 from kafka import KafkaProducer
 from kafka.errors import NoBrokersAvailable
+
+import sensors.sensor as sensor
 
 
 def on_send_success(metadata):
@@ -44,7 +45,7 @@ if __name__ == '__main__':
             print('No brokers available, sleeping', flush=True)
             sleep(5)
 
-    heater = Sensor(watt_params, temp_params)
+    heater = sensor.Sensor(watt_params, temp_params)
 
     t = 0
     while True:
