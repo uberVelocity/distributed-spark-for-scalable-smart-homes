@@ -18,7 +18,6 @@ setTimeout(() => {
 
     const run = async() => {
         await consumer.connect()
-        console.log(`connected to ${kafka.PORT}`)
         await consumer.subscribe({topic: 'sensor_data', fromBeginning: true});
         
         await consumer.run({
@@ -62,10 +61,6 @@ setTimeout(() => {
     app.use(bodyParser.json());
     app.use(cors());
     app.use(express.json());
-
-    const insert = require('../routes/api/insert');
-
-    app.use('/api/insert', insert);
 
     const port = process.env.PORT || 4004;
 
