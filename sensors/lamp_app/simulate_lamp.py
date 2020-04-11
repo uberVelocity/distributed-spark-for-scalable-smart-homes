@@ -2,7 +2,6 @@ import sensors.sensor as sensor
 from sensors import Variable
 
 if __name__ == '__main__':
-
     watts = Variable(
             name='wattage',
             a=0.25,

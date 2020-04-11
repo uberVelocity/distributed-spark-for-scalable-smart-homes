@@ -83,8 +83,8 @@ services:
       - 'kafka2_data:/bitnami'
     depends_on:
       - zookeeper
-    logging:
-      driver: "none"
+    # logging:
+    #   driver: "none"
 
   kafka2:
     container_name: kafka_2
@@ -105,8 +105,8 @@ services:
       - 'kafka_data:/bitnami'
     depends_on:
       - zookeeper
-    logging:
-      driver: "none"
+    # logging:
+    #   driver: "none"
 
   kafka3:
     image: 'bitnami/kafka:2'
@@ -127,8 +127,8 @@ services:
       - 'kafka3_data:/bitnami'
     depends_on:
       - zookeeper
-    logging:
-      driver: "none"
+    # logging:
+    #   driver: "none"
 
   kafka_manager:
     container_name: kafka_manager
@@ -154,8 +154,8 @@ services:
       - kafka
       - kafka2
       - kafka3
-    logging:
-      driver: "none"
+    # logging:
+      # driver: "none"
 
   sensor_lamp:
     container_name: sensor_lamp
@@ -169,8 +169,8 @@ services:
       - kafka
       - kafka2
       - kafka3
-    logging:
-      driver: "none"
+    # logging:
+    #   driver: "none"
 
   sensor_vacuum:
     container_name: sensor_vacuum
@@ -184,8 +184,8 @@ services:
       - kafka
       - kafka2
       - kafka3
-    logging:
-      driver: "none"
+    # logging:
+    #   driver: "none"
 
 ## Spark infrastructure
 #  spark-master:
