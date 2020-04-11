@@ -146,7 +146,9 @@ services:
     container_name: sensor_heater
     networks:
       - household-network
-    build: sensors/heater_app
+    build: 
+      context: .
+      dockerfile: sensors/heater_app/Dockerfile
     depends_on:
       - zookeeper
       - kafka
@@ -159,7 +161,9 @@ services:
     container_name: sensor_lamp
     networks:
       - household-network
-    build: sensors/lamp_app
+    build: 
+      context: .
+      dockerfile: sensors/lamp_app/Dockerfile
     depends_on:
       - zookeeper
       - kafka
@@ -172,7 +176,9 @@ services:
     container_name: sensor_vacuum
     networks:
       - household-network
-    build: sensors/vacuum_app
+    build: 
+      context: .
+      dockerfile: sensors/vacuum_app/Dockerfile
     depends_on:
       - zookeeper
       - kafka
