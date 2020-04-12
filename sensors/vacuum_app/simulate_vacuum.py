@@ -5,7 +5,7 @@ if __name__ == '__main__':
 
     watts = Variable(
             name='wattage',
-            a=1.2,
+            a=0.3,
             b=150,
             variance=1,
             limit=200
@@ -13,7 +13,7 @@ if __name__ == '__main__':
 
     suction = Variable(
         name='suction',
-        a=-0.02,
+        a=-0.005,
         b=100,
         variance=1,
         limit=80

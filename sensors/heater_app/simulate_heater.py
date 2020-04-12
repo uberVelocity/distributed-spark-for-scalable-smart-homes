@@ -5,7 +5,7 @@ if __name__ == '__main__':
 
     watts = Variable(
             name='wattage',
-            a=12,
+            a=3,
             b=1500,
             variance=10,
             limit=2000
@@ -13,7 +13,7 @@ if __name__ == '__main__':
 
     temps = Variable(
         name='temperature',
-        a=-0.04,
+        a=-0.01,
         b=22,
         variance=0.1,
         limit=20
