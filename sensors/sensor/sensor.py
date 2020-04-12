@@ -8,9 +8,7 @@ from kafka.errors import NoBrokersAvailable
 
 
 def on_send_success(metadata):
-    print(metadata.topic)
-    print(metadata.partition)
-    print(metadata.offset)
+    print(f"Sent update to Kafka partition {metadata.partition} using topic {metadata.topic}, offset {metadata.offset}")
 
 
 def on_send_error(excp):
@@ -53,7 +51,11 @@ class Sensor:
         jitter = (random.random() * 2 * variable.variance) - variable.variance
         next_value = variable.a * t + variable.b + jitter
 
-        if next_value >= variable.limit:
+        if variable.a < 0 and next_value <= variable.limit:
+            self.on = False  # If limit exceeded, break device
+            return -1
+
+        if variable.a >= 0 and next_value >= variable.limit:
             self.on = False  # If limit exceeded, break device
             return -1
 
