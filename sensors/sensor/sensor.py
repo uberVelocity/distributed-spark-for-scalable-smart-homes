@@ -23,6 +23,7 @@ class Sensor:
         :param variables: list of the Variable namedtuple.
         """
         self.id = datetime.utcnow().timestamp()  # Use UNIX timestamp as temp id value
+        self.start = self.id
         self.on = True
         self.variables = variables
         self.producer = None
@@ -68,15 +69,16 @@ class Sensor:
 
         :return:
         """
-        t = 0
         while True:
-
-            # Break when appliance is broken or enough time has passed
-            if t == 50 or not self.on:
-                break
 
             # Get update timestamp
             timestamp = datetime.utcnow().timestamp()
+            t = timestamp - self.start  # difference in seconds
+
+            # Break when appliance is broken or enough time has passed
+            if t > 180 or not self.on:
+                break
+
             print(f"Device {self.id}: time({t}) = {timestamp}", flush=True)
 
             # For each variable of the sensor, compute the next value
@@ -90,6 +92,7 @@ class Sensor:
             msg = {
                 'id': self.id,
                 'timestamp': timestamp,
+                't': t,
                 'sensors': sensor_dict
             }
 
