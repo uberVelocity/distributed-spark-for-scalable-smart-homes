@@ -1,4 +1,6 @@
 from pyspark.sql import SparkSession
+from pyspark.sql.types import *
+from pyspark.sql.functions import *
 import time
 if __name__ == '__main__':
     print('Started script')
@@ -10,9 +12,28 @@ if __name__ == '__main__':
         .option("startingOffsets", "earliest") \
         .option("subscribe", "sensor_data") \
         .load()
-    dataframe = df.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
+    stringDF = df.selectExpr("CAST(value AS STRING)")
+
+    schema = StructType([
+        StructField("id", DoubleType(), False),
+        StructField("timestamp", TimestampType(), False),
+        StructField("sensors", StructType([
+            StructField("wattage", DoubleType(), False)
+        ]), False)
+    ])
+    def parse_data_from_kafka_message(stringDF, schema):
+        from pyspark.sql.functions import split
+        assert stringDF.isStreaming == True, "DataFrame doesn't receive streaming data"
+        col = split(stringDF['value'], ',')
+        for index, field in enumerate(schema):
+            stringDF = stringDF.withColumn(field.name, col.getItem(index).cast(field.dataType))
+        return stringDF.select([field.name for field in schema])
     
+    #df = parse_data_from_kafka_message(stringDF, schema)
+    df = stringDF.select(from_json("value", schema))
+    manipulatedDF = df
+    stringDF.printSchema()
     # Print the stream for 10 seconds
-    query = df.writeStream.format("console").start() 
-    time.sleep(10)
-    query.stop()
+    query = stringDF.writeStream.outputMode("append").format("console").option("truncate", False).start().awaitTermination()
+    # time.sleep()
+    # query.stop()
