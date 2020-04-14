@@ -1,4 +1,4 @@
-from heater import Heater
+from sensor import Sensor
 from time import sleep
 from datetime import datetime
 from json import dumps
@@ -18,18 +18,18 @@ def on_send_error(excp):
 
 
 if __name__ == '__main__':
-    sleep(15)
     watt_params = {
-        'base': 1500,
-        'variance': 20,
-        'limit': 2000
+        'a': 0.25,
+        'b': 40,
+        'variance': 0.1,
+        'limit': 50
     }
 
-    temp_params = {
-        'base': 22,
-        'variance': 0.2,
-        'limit': 20,
-        't_fault': 10
+    lumen_params = {
+        'a': -2.5,
+        'b': 500,
+        'variance': 0.1,
+        'limit': 400,
     }
 
     producer = None
@@ -44,31 +44,31 @@ if __name__ == '__main__':
             print('No brokers available, sleeping', flush=True)
             sleep(5)
 
-    heater = Heater(watt_params, temp_params)
+    lamp = Sensor(watt_params, lumen_params)
 
     t = 0
     while True:
-        if t == 50 or not heater.on_state:   # break when appliance is broken or enough time has passed
+        if t == 50 or not lamp.on:   # break when appliance is broken or enough time has passed
             break
 
         timestamp = datetime.utcnow().timestamp()
-        watts = heater.compute_wattage(t)
-        temperature = heater.compute_heater(t)
+        wattage = lamp.compute_var1(t)
+        lumen = lamp.compute_var2(t)
 
-        print(f"Device {heater.id}: time({t}) = {timestamp}", flush=True)
-        print(f"Device {heater.id}: wattage({t}) = {watts}")
-        print(f"Device {heater.id}: temperature({t}) = {temperature}")
+        print(f"Device {lamp.id}: time({t}) = {timestamp}", flush=True)
+        print(f"Device {lamp.id}: wattage({t}) = {wattage}")
+        print(f"Device {lamp.id}: lumen({t}) = {lumen}")
 
         msg = {
-            'id': heater.id,
+            'id': lamp.id,
             'timestamp': timestamp,
             'sensors': {
-                'temperature': temperature,
-                'wattage': watts,
+                'lumen': lumen,
+                'wattage': wattage,
             }
         }
 
         # Stream data and and sleep for 4 seconds between update.
-        producer.send('sensor_data', key=heater.id, value=msg).add_callback(on_send_success).add_errback(on_send_error)
+        producer.send('sensor_data', key=lamp.id, value=msg).add_callback(on_send_success).add_errback(on_send_error)
         t += 1
         sleep(4)

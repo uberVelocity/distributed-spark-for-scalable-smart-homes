@@ -6,4 +6,4 @@ COPY . .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-CMD [ "python", "./vacuum/simulate_vacuum.py" ]
+CMD [ "python", "./simulate_vacuum.py" ]

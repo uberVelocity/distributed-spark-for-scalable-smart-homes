@@ -1,4 +1,4 @@
-from lamp import Lamp
+from sensor import Sensor
 from time import sleep
 from datetime import datetime
 from json import dumps
@@ -18,18 +18,18 @@ def on_send_error(excp):
 
 
 if __name__ == '__main__':
-    sleep(15)
     watt_params = {
-        'base': 6,
-        'variance': 0.2,
-        'limit': 10
+        'a': 1.2,
+        'b': 150,
+        'variance': 1,
+        'limit': 200
     }
 
-    lumen_params = {
-        'base': 110,
-        'variance': 0.2,
-        'limit': 120,
-        't_fault': 30
+    suction_params = {
+        'a': -0.2,
+        'b': 100,
+        'variance': 1,
+        'limit': 80,
     }
 
     producer = None
@@ -43,31 +43,32 @@ if __name__ == '__main__':
         except NoBrokersAvailable:
             print('No brokers available, sleeping', flush=True)
             sleep(5)
-    lamp = Lamp(watt_params, lumen_params)
+
+    lamp = Sensor(watt_params, suction_params)
 
     t = 0
     while True:
-        if t is 50 or lamp.on_state is False:
+        if t == 50 or not lamp.on:   # break when appliance is broken or enough time has passed
             break
 
         timestamp = datetime.utcnow().timestamp()
-        watts = lamp.compute_wattage(t)
-        lumen = lamp.compute_lumen(t)
+        wattage = lamp.compute_var1(t)
+        suction = lamp.compute_var2(t)
 
-        print(f"Device {lamp.id}: time({t}) = {timestamp}")
-        print(f"Device {lamp.id}: wattage({t}) = {watts}")
-        print(f"Device {lamp.id}: lumen({t}) = {lumen}")
+        print(f"Device {lamp.id}: time({t}) = {timestamp}", flush=True)
+        print(f"Device {lamp.id}: wattage({t}) = {wattage}")
+        print(f"Device {lamp.id}: suction({t}) = {suction}")
 
         msg = {
             'id': lamp.id,
             'timestamp': timestamp,
             'sensors': {
-                'lumen': lumen,
-                'wattage': watts,
+                'suction': suction,
+                'wattage': wattage,
             }
         }
 
-        # Stream data and and sleep for 4 seconds between updates
+        # Stream data and and sleep for 4 seconds between update.
         producer.send('sensor_data', key=lamp.id, value=msg).add_callback(on_send_success).add_errback(on_send_error)
         t += 1
         sleep(4)

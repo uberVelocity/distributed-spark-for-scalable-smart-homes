@@ -1,9 +1,7 @@
-import os
-
 from pyspark import SparkContext, SparkConf
 from pyspark.sql import SQLContext
 from pyspark.sql.functions import mean as _mean, stddev as _stddev, col
-import pyspark.sql.functions as f
+
 
 def load_and_get_table_df(keys_space_name, table_name):
     """
@@ -18,9 +16,41 @@ def load_and_get_table_df(keys_space_name, table_name):
         .load()
     return table_df
 
-def z_scores(x, mean, std):
-    print(x[0])
+
+def z_score(x, mean, std):
     return (x - mean) / std
+
+
+def convert_to_zscore(df):
+    """
+    Converts a DataFrame to z score values.
+    :param df: DataFrame to be converted
+    :return: A DataFrame containing the transformed table.
+    """
+
+    means = {}
+    stds = {}
+
+    for column in df.schema.names[2:]:  # leave out the first two columns
+        df_stats = df.select(
+            _mean(col(column)).alias('mean'),  # Compute mean for column
+            _stddev(col(column)).alias('std')  # Compute std for column
+        ).collect()
+
+        means[column] = df_stats[0]['mean']
+        stds[column] = df_stats[0]['std']
+
+    cols = df.schema.names[2:]  # Needs to be specified here, otherwise references to names not available.
+
+    # RDD used to distribute task
+    transformed = df.rdd.map(lambda x: (x[0],
+                                        x[1],
+                                        z_score(x[2], means[cols[0]], stds[cols[0]]),
+                                        z_score(x[3], means[cols[1]], stds[cols[1]])
+                                        )
+                             ).toDF(df.schema.names)
+
+    return transformed
 
 
 if __name__ == '__main__':
@@ -34,30 +64,8 @@ if __name__ == '__main__':
     heaters = load_and_get_table_df('household', 'heatersensor')
     heaters.show()
 
-    # Compute the mean and std of the 'temp' column
-    df_stats = heaters.select(
-    _mean(col('temp')).alias('mean'),
-    _stddev(col('temp')).alias('std')
-    ).collect()
+    heaters = convert_to_zscore(heaters)
+    heaters.show()
 
-    # Store mean and std
-    mean = df_stats[0]['mean']
-    std = df_stats[0]['std']
-
-    # Set z-score threshold
-    threshold = 0.4
-
-    # Compute z-scores of 'temp' column
-    z_scores = heaters.select('temp').rdd.map(lambda x:((x[0] - mean) / std, 1)).toDF()
-    print('z_scores df: ', z_scores.show())
-
-    # Filter z-scores values above threshold
-    filtered = z_scores.filter(f.col('_1') > threshold)
-    print('FILTER: ', filtered.show())
-
-    # Reduce (count how many)
-    reduced = filtered.rdd.reduce(lambda a, b: ('sum', a[1] + b[1]))[1]
-    print('REDUCED: ', reduced)
-    
     # Finish
     spark_context.stop()

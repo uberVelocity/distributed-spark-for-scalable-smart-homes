@@ -29,3 +29,9 @@ to submit to Spark.
 
 ## System Architecture
 Please find the google slides describing our system architecture [here](https://docs.google.com/presentation/d/1NYL6EoNU3GWoOIYkiPU1ZjK3Hhs6i2bgwzrqqKD7PlU/edit?usp=sharing).
+
+#### TODO:
+
+- [ ] Interactive [map](https://leafletjs.com) with pins that simulate households. Click on a pin and be presented with options: view data (historical query) / request lifetime of appliances of household ([leaflet for Vue](https://www.npmjs.com/package/vue2-leaflet)).
+- [ ] View data as [interactive/dynamic](https://www.chartjs.org) graphs.
+- [ ] If no time for leaflet, a list of all households would suffice.
