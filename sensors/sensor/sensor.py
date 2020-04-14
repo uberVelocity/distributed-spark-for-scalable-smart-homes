@@ -3,7 +3,7 @@ import uuid
 import os
 
 from time import sleep
-from datetime import datetime
+from datetime import datetime, timezone
 from json import dumps
 from kafka import KafkaProducer
 from kafka.errors import NoBrokersAvailable
@@ -76,40 +76,39 @@ class Sensor:
 
         :return:
         """
-        start = datetime.utcnow().timestamp()  # set the starting time
+        start = datetime.now(timezone.utc)  # set the starting time
 
         while True:
 
             # Get update timestamp
-            timestamp = datetime.utcnow().timestamp()
+            timestamp = datetime.now(timezone.utc)
             t = timestamp - start  # difference in seconds
 
             # Break when appliance is broken or enough time has passed
-            if t > 180 or not self.on:
+            if t.seconds > 180 or not self.on:
                 break
 
-            print(f"Device {self.id}: time({t}) = {timestamp}", flush=True)
+            print(f"Device {self.id}: time({t.seconds}) = {timestamp}", flush=True)
 
             # For each variable of the sensor, compute the next value
             variable_dict = {}
             for variable in self.variables:
-                next_value = self.compute_variable(variable, t)
+                next_value = self.compute_variable(variable, t.seconds)
                 variable_dict[variable.name] = next_value
-                print(f"Device {self.id}: " + variable.name + f"({t}) = {next_value}")
+                print(f"Device {self.id}: " + variable.name + f"({t.seconds}) = {next_value}")
 
             # Create message dict containing all relevant data
             msg = {
                 'id': str(self.id),
                 'model': self.model,
-                'timestamp': timestamp,
-                't': t,
+                'timestamp': str(timestamp),
+                't': t.seconds,
                 'variables': variable_dict
             }
 
             # Stream data and and sleep for 4 seconds between update.
             self.producer.send('sensor_data', key=self.id, value=msg).add_callback(on_send_success).add_errback(
                 on_send_error)
-            t += 1
             sleep(4)
 
 

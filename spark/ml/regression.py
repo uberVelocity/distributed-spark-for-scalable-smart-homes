@@ -70,8 +70,7 @@ def get_coefficients(df):
     :return: List containing tuples (a, b, max, min) with linear regression coefficients and limits.
     """
 
-    df = df.repartition("id")  # repartition data such that each partition controls only one id.
-    df.foreachPartition(partition_time_sync)
+    results = spark_context.parallelize(range(2, len(df.schema.names)))
 
     for column in df.schema.names[2:]:
 
