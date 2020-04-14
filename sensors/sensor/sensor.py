@@ -20,11 +20,11 @@ class Sensor:
     def __init__(self, type, variables):
         """
         Constructor which specifies the sensor sensor params.
+        :param type: string for type of sensor.
         :param variables: list of the Variable namedtuple.
         """
         self.id = datetime.utcnow().timestamp()  # Use UNIX timestamp as temp id value
         self.type = type
-        self.start = self.id
         self.on = True
         self.variables = variables
         self.producer = None
@@ -70,11 +70,13 @@ class Sensor:
 
         :return:
         """
+        start = datetime.utcnow().timestamp()  # set the starting time
+
         while True:
 
             # Get update timestamp
             timestamp = datetime.utcnow().timestamp()
-            t = timestamp - self.start  # difference in seconds
+            t = timestamp - start  # difference in seconds
 
             # Break when appliance is broken or enough time has passed
             if t > 180 or not self.on:
