@@ -82,27 +82,27 @@ class Sensor:
 
             # Get update timestamp
             timestamp = datetime.now(timezone.utc)
-            delta = timestamp - start  # difference in seconds
+            t = timestamp - start  # difference in seconds
 
             # Break when appliance is broken or enough time has passed
-            if delta.seconds > 180 or not self.on:
+            if t.seconds > 180 or not self.on:
                 break
 
-            print(f"Device {self.id}: time({delta.seconds}) = {timestamp}", flush=True)
+            print(f"Device {self.id}: time({t.seconds}) = {timestamp}", flush=True)
 
             # For each variable of the sensor, compute the next value
             variable_dict = {}
             for variable in self.variables:
-                next_value = self.compute_variable(variable, delta.seconds)
+                next_value = self.compute_variable(variable, t.seconds)
                 variable_dict[variable.name] = next_value
-                print(f"Device {self.id}: " + variable.name + f"({delta.seconds}) = {next_value}")
+                print(f"Device {self.id}: " + variable.name + f"({t.seconds}) = {next_value}")
 
             # Create message dict containing all relevant data
             msg = {
                 'id': str(self.id),
                 'model': self.model,
                 'timestamp': str(timestamp),
-                'delta': delta.seconds,
+                't': t.seconds,
                 'variables': variable_dict
             }
 
