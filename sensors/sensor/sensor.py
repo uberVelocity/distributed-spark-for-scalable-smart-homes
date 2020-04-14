@@ -1,5 +1,6 @@
 import random
 import uuid
+import os
 
 from time import sleep
 from datetime import datetime
@@ -30,10 +31,14 @@ class Sensor:
         self.variables = variables
         self.producer = None
 
+        # Get the kafka brokers from the env variables
+        kafka_servers = os.environ.get('KAFKA').replace("'", "").split(":")
+        kafka_servers = [server.replace("-", ":") for server in kafka_servers]
+
         while not self.producer:
             try:
                 self.producer = KafkaProducer(
-                    bootstrap_servers=['kafka:29091'],
+                    bootstrap_servers=kafka_servers,
                     key_serializer=lambda m: str(m).encode(),  # transforms id string to bytes
                     value_serializer=lambda m: dumps(m).encode('ascii')  # transforms messages to json bytes
                 )

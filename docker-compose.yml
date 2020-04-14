@@ -114,7 +114,7 @@ services:
     container_name: kafka_3
     ports:
       - '9093:9093'
-      - '29093:9092'
+      - '29093:9093'
     environment:
       - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
       - ALLOW_PLAINTEXT_LISTENER=yes
@@ -143,6 +143,8 @@ services:
 
   # Sensors
   sensor_heater:
+    environment:
+      - KAFKA='kafka-29091':'kafka2-29092':'kafka3-29093'
     container_name: sensor_heater
     networks:
       - household-network
@@ -158,6 +160,8 @@ services:
       driver: "none"
 
   sensor_lamp:
+    environment:
+      - KAFKA='kafka-29091':'kafka2-29092':'kafka3-29093'
     container_name: sensor_lamp
     networks:
       - household-network
@@ -173,6 +177,8 @@ services:
       driver: "none"
 
   sensor_vacuum:
+    environment:
+      - KAFKA='kafka-29091':'kafka2-29092':'kafka3-29093'
     container_name: sensor_vacuum
     networks:
       - household-network
