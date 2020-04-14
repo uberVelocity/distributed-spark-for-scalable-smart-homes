@@ -17,12 +17,13 @@ def on_send_error(excp):
 
 
 class Sensor:
-    def __init__(self, variables):
+    def __init__(self, type, variables):
         """
         Constructor which specifies the sensor sensor params.
         :param variables: list of the Variable namedtuple.
         """
         self.id = datetime.utcnow().timestamp()  # Use UNIX timestamp as temp id value
+        self.type = type
         self.start = self.id
         self.on = True
         self.variables = variables
@@ -91,6 +92,7 @@ class Sensor:
             # Create message dict containing all relevant data
             msg = {
                 'id': self.id,
+                'type': self.type,
                 'timestamp': timestamp,
                 't': t,
                 'sensors': sensor_dict

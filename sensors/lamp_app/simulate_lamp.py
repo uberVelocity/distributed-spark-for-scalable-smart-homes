@@ -19,5 +19,5 @@ if __name__ == '__main__':
     )
 
     # create heater sensor and run it
-    lamp = sensor.Sensor([watts, lumen])
+    lamp = sensor.Sensor('lamp', [watts, lumen])
     lamp.run_simulation()

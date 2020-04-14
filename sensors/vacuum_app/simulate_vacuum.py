@@ -20,5 +20,5 @@ if __name__ == '__main__':
     )
 
     # create heater sensor and run it
-    vacuum = sensor.Sensor([watts, suction])
+    vacuum = sensor.Sensor('vacuum', [watts, suction])
     vacuum.run_simulation()
