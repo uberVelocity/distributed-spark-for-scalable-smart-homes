@@ -86,10 +86,10 @@ class Sensor:
             print(f"Device {self.id}: time({t}) = {timestamp}", flush=True)
 
             # For each variable of the sensor, compute the next value
-            sensor_dict = {}
+            variable_dict = {}
             for variable in self.variables:
                 next_value = self.compute_variable(variable, t)
-                sensor_dict[variable.name] = next_value
+                variable_dict[variable.name] = next_value
                 print(f"Device {self.id}: " + variable.name + f"({t}) = {next_value}")
 
             # Create message dict containing all relevant data
@@ -98,7 +98,7 @@ class Sensor:
                 'model': self.model,
                 'timestamp': timestamp,
                 't': t,
-                'sensors': sensor_dict
+                'variables': variable_dict
             }
 
             # Stream data and and sleep for 4 seconds between update.
