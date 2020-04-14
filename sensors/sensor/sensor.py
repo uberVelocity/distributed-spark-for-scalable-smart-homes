@@ -1,4 +1,5 @@
 import random
+import uuid
 
 from time import sleep
 from datetime import datetime
@@ -17,14 +18,14 @@ def on_send_error(excp):
 
 
 class Sensor:
-    def __init__(self, type, variables):
+    def __init__(self, model, variables):
         """
         Constructor which specifies the sensor sensor params.
-        :param type: string for type of sensor.
+        :param model: string for type of sensor.
         :param variables: list of the Variable namedtuple.
         """
-        self.id = datetime.utcnow().timestamp()  # Use UNIX timestamp as temp id value
-        self.type = type
+        self.id = uuid.uuid1()
+        self.model = model
         self.on = True
         self.variables = variables
         self.producer = None
@@ -93,8 +94,8 @@ class Sensor:
 
             # Create message dict containing all relevant data
             msg = {
-                'id': self.id,
-                'type': self.type,
+                'id': str(self.id),
+                'model': self.model,
                 'timestamp': timestamp,
                 't': t,
                 'sensors': sensor_dict
