@@ -1,4 +1,6 @@
 import random
+import uuid
+import os
 
 from time import sleep
 from datetime import datetime
@@ -17,22 +19,26 @@ def on_send_error(excp):
 
 
 class Sensor:
-    def __init__(self, type, variables):
+    def __init__(self, model, variables):
         """
         Constructor which specifies the sensor sensor params.
+        :param model: string for type of sensor.
         :param variables: list of the Variable namedtuple.
         """
-        self.id = datetime.utcnow().timestamp()  # Use UNIX timestamp as temp id value
-        self.type = type
-        self.start = self.id
+        self.id = uuid.uuid1()
+        self.model = model
         self.on = True
         self.variables = variables
         self.producer = None
 
+        # Get the kafka brokers from the env variables
+        kafka_servers = os.environ.get('KAFKA').replace("'", "").split(":")
+        kafka_servers = [server.replace("-", ":") for server in kafka_servers]
+
         while not self.producer:
             try:
                 self.producer = KafkaProducer(
-                    bootstrap_servers=['kafka:29091'],
+                    bootstrap_servers=kafka_servers,
                     key_serializer=lambda m: str(m).encode(),  # transforms id string to bytes
                     value_serializer=lambda m: dumps(m).encode('ascii')  # transforms messages to json bytes
                 )
@@ -70,11 +76,13 @@ class Sensor:
 
         :return:
         """
+        start = datetime.utcnow().timestamp()  # set the starting time
+
         while True:
 
             # Get update timestamp
             timestamp = datetime.utcnow().timestamp()
-            t = timestamp - self.start  # difference in seconds
+            t = timestamp - start  # difference in seconds
 
             # Break when appliance is broken or enough time has passed
             if t > 180 or not self.on:
@@ -83,19 +91,19 @@ class Sensor:
             print(f"Device {self.id}: time({t}) = {timestamp}", flush=True)
 
             # For each variable of the sensor, compute the next value
-            sensor_dict = {}
+            variable_dict = {}
             for variable in self.variables:
                 next_value = self.compute_variable(variable, t)
-                sensor_dict[variable.name] = next_value
+                variable_dict[variable.name] = next_value
                 print(f"Device {self.id}: " + variable.name + f"({t}) = {next_value}")
 
             # Create message dict containing all relevant data
             msg = {
-                'id': self.id,
-                'type': self.type,
+                'id': str(self.id),
+                'model': self.model,
                 'timestamp': timestamp,
                 't': t,
-                'sensors': sensor_dict
+                'variables': variable_dict
             }
 
             # Stream data and and sleep for 4 seconds between update.
