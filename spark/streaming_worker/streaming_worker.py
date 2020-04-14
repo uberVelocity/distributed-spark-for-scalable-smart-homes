@@ -16,24 +16,17 @@ if __name__ == '__main__':
 
     schema = StructType([
         StructField("id", DoubleType(), False),
-        StructField("timestamp", TimestampType(), False),
-        StructField("sensors", StructType([
-            StructField("wattage", DoubleType(), False)
-        ]), False)
+        StructField("t", DoubleType(), False)
     ])
-    def parse_data_from_kafka_message(stringDF, schema):
-        from pyspark.sql.functions import split
-        assert stringDF.isStreaming == True, "DataFrame doesn't receive streaming data"
-        col = split(stringDF['value'], ',')
-        for index, field in enumerate(schema):
-            stringDF = stringDF.withColumn(field.name, col.getItem(index).cast(field.dataType))
-        return stringDF.select([field.name for field in schema])
-    
-    #df = parse_data_from_kafka_message(stringDF, schema)
-    df = stringDF.select(from_json("value", schema))
+
+    df = stringDF.select(from_json("value", schema).alias("value")).select("value.*")#.selectExpr("CAST(id AS DOUBLE", "CAST(t AS DOUBLE)")
     manipulatedDF = df
+    print("########################")
     stringDF.printSchema()
+    print("########################")
+    df.printSchema()
+    print("########################")
     # Print the stream for 10 seconds
-    query = stringDF.writeStream.outputMode("append").format("console").option("truncate", False).start().awaitTermination()
-    # time.sleep()
-    # query.stop()
+    query = df.writeStream.outputMode("append").format("console").option("truncate", False).start()#.awaitTermination()
+    time.sleep(5)
+    query.stop()
