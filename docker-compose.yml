@@ -18,34 +18,34 @@ volumes:
 services:
 
 #  # Cassandra infrastructure
-#  cassandra-cluster:
-#    container_name: cassandra-cluster
-#    restart: always
-#    build: ./cassandra/cassandra_build
-#    networks:
-#      - household-network
-#    volumes:
-#      - cassandra-volume:/var/lib/cassandra
-#    expose:
-#      - 7000
-#      - 7001
-#      - 7199
-#      - 9042
-#      - 9160
-#    logging:
-#      driver: "none"
+  cassandra-cluster:
+    container_name: cassandra-cluster
+    restart: always
+    build: ./cassandra/cassandra_build
+    networks:
+      - household-network
+    volumes:
+      - cassandra-volume:/var/lib/cassandra
+    expose:
+      - 7000
+      - 7001
+      - 7199
+      - 9042
+      - 9160
+    # logging:
+    #   driver: "none"
 
-#  # Inserts data into cassandra
-#  db-interface:
-#    container_name: dbinterface
-#    restart: always
-#    build: cassandra/db_interface
-#    ports:
-#      - 4004:4004
-#    networks:
-#      - household-network
-##    logging:
-##      driver: "none"
+ # Inserts data into cassandra
+  db-interface:
+    container_name: dbinterface
+    restart: always
+    build: cassandra/db_interface
+    ports:
+      - 4004:4004
+    networks:
+      - household-network
+  #    logging:
+  #      driver: "none"
 
   # Zookeeper
   zookeeper:
@@ -83,8 +83,8 @@ services:
       - 'kafka2_data:/bitnami'
     depends_on:
       - zookeeper
-    # logging:
-    #   driver: "none"
+    logging:
+      driver: "none"
 
   kafka2:
     container_name: kafka_2
@@ -105,8 +105,8 @@ services:
       - 'kafka_data:/bitnami'
     depends_on:
       - zookeeper
-    # logging:
-    #   driver: "none"
+    logging:
+      driver: "none"
 
   kafka3:
     image: 'bitnami/kafka:2'
@@ -127,8 +127,8 @@ services:
       - 'kafka3_data:/bitnami'
     depends_on:
       - zookeeper
-    # logging:
-    #   driver: "none"
+    logging:
+      driver: "none"
 
   kafka_manager:
     container_name: kafka_manager
