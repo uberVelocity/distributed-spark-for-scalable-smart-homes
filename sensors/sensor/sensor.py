@@ -3,7 +3,7 @@ import uuid
 import os
 
 from time import sleep
-from datetime import datetime
+from datetime import datetime, timezone
 from json import dumps
 from kafka import KafkaProducer
 from kafka.errors import NoBrokersAvailable
@@ -76,16 +76,16 @@ class Sensor:
 
         :return:
         """
-        start = datetime.utcnow().timestamp()  # set the starting time
+        start = datetime.now(timezone.utc)  # set the starting time
 
         while True:
 
             # Get update timestamp
-            timestamp = datetime.utcnow().timestamp()
+            timestamp = datetime.now(timezone.utc)
             t = timestamp - start  # difference in seconds
 
             # Break when appliance is broken or enough time has passed
-            if t > 180 or not self.on:
+            if t.seconds > 180 or not self.on:
                 break
 
             print(f"Device {self.id}: time({t}) = {timestamp}", flush=True)
@@ -102,7 +102,7 @@ class Sensor:
                 'id': str(self.id),
                 'model': self.model,
                 'timestamp': timestamp,
-                't': t,
+                't': t.seconds,
                 'variables': variable_dict
             }
 
