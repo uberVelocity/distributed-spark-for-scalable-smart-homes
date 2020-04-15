@@ -11,7 +11,7 @@ module.exports = class KafkaController {
     
     static async getData() {
         await consumer.connect()
-        await consumer.subscribe({topic: 'sensor_data', fromLatest: true});
+        await consumer.subscribe({topic: 'predictions', fromLatest: true});
         
         await consumer.run({
             eachMessage: async ({topic, partition, message}) => {
