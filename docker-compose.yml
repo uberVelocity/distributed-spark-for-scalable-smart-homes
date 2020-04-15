@@ -16,7 +16,6 @@ volumes:
     driver: local
 
 services:
-
 # # Cassandra infrastructure
 #   cassandra-cluster:
 #     container_name: cassandra-cluster
@@ -36,7 +35,7 @@ services:
     #   driver: "none"
 
  # Inserts data into cassandra
-  status-retriever:
+  statusretriever:
     container_name: statusretriever
     restart: always
     build: status_retriever
@@ -203,6 +202,18 @@ services:
     logging:
       driver: "none"
 
+  # Frontend for showcasing predictions (localhost:80)
+  frontend:
+    container_name: frontend
+    restart: always
+    build: frontend/household-view
+    ports:
+      - '80:80'
+    networks:
+      - household-network
+    # logging:
+    #   driver: "none"
+
 ## Spark infrastructure
 #  spark-master:
 #    container_name: spark-master
@@ -264,16 +275,6 @@ services:
 #    networks:
 #      - household-network
   
- # Frontend
-  frontend:
-    container_name: frontend
-    restart: always
-    build: frontend/household-view
-    ports:
-      - '80:80'
-    networks:
-      - household-network
-    # logging:
-    #   driver: "none"
+
 
   

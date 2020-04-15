@@ -11,7 +11,7 @@ module.exports = class KafkaController {
     
     static async getData() {
         await consumer.connect()
-        await consumer.subscribe({topic: 'sensor_data', fromBeginning: true});
+        await consumer.subscribe({topic: 'sensor_data', fromLatest: true});
         
         await consumer.run({
             eachMessage: async ({topic, partition, message}) => {
@@ -44,13 +44,14 @@ module.exports = class KafkaController {
                     sensor = "lamp";
                     console.log(`Lamp message to be inserted = ${params}`);
                 }
-                else if (message.value.toString().includes("suction")) {
+                else if (message == "vacuum") {
                     const suction = variables["suction"];
                     const wattage = variables["wattage"];
                     params = [id, model, t, timestamp, wattage, suction];
                     sensor = "vacuum";
                     console.log(`Vacuum message to be inserted = ${params}`);
                 }
+                consumer.disconnect();
                 return params;
             }
         });

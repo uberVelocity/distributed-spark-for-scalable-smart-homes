@@ -51,7 +51,7 @@ setTimeout(() => {
                     sensor = "lamp";
                     console.log(`Lamp message to be inserted = ${params}`);
                 }
-                else if (message.value.toString().includes("suction")) {
+                else if (model == "vacuum") {
                     const suction = variables["suction"];
                     const wattage = variables["wattage"];
                     params = [id, model, t, timestamp, wattage, suction];
