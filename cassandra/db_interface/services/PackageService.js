@@ -12,9 +12,9 @@ const clientOptions = {
 };
 let cassandraClient = new cassandra.Client(clientOptions);
 
-const insertHeaterQuery = 'INSERT INTO heatersensor(id, model, t, ts, wattage, temperature) VALUES(?, ?, ?, ?, ?, ?)';
-const insertLampQuery = 'INSERT INTO lampsensor(id, model, t, ts, wattage, lumen) VALUES(?, ?, ?, ?, ?, ?)';
-const insertVacuumQuery = 'INSERT INTO vacuumsensor(id, model, t, ts, wattage, suction) VALUES(?, ?, ?, ?, ?, ?)';
+const insertHeaterQuery = 'INSERT INTO heaters(id, model, t, ts, wattage, temperature) VALUES(?, ?, ?, ?, ?, ?)';
+const insertLampQuery = 'INSERT INTO lamps(id, model, t, ts, wattage, lumen) VALUES(?, ?, ?, ?, ?, ?)';
+const insertVacuumQuery = 'INSERT INTO vacuums(id, model, t, ts, wattage, suction) VALUES(?, ?, ?, ?, ?, ?)';
 
 module.exports = class PackageService {
     // Commit sensory data to Cassandra Cluster
