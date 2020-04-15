@@ -1,7 +1,7 @@
 FROM node:10
 
 # Create app directory
-WORKDIR test_sensors
+WORKDIR dbinterface
 
 # Install app dependencies
 COPY package*.json ./

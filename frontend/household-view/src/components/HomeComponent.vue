@@ -31,7 +31,7 @@
         </template>
     </b-navbar>
     <h1>Home</h1>
-      <button @click="showHeater()">Heater</button>
+      <button @click="getData()">Heater</button>
       <br>
       <textarea readonly name="timeStampText" id="timeStampText" cols="30" rows="30" v-model="timeStampText"></textarea>
       <br>
@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import HistoryService from '../services/HistoryRetriever'
+import StatusRetriever from '../services/StatusRetriever'
 export default {
   data() {
     return {
@@ -55,13 +55,9 @@ export default {
     goHome() {
       this.$router.push('/');
     },
-    async showHeater() {
-      const heaterHistory = await HistoryService.getHeater();
-      this.timeStamps = heaterHistory.data.ts;
-      this.values = heaterHistory.data.values;
-
-      this.formatTimeStamps(heaterHistory.data.timeStamps);
-      this.formatValues(heaterHistory.data.values);
+    async getData() {
+      const data = await StatusRetriever.getStatus();
+      alert(`received something: ${data}`);
     },
     formatTimeStamps(data) {
       this.timeStampText = '';

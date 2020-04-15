@@ -1,22 +1,15 @@
-const express = require('express');
-const cors = require('cors');
-const bodyParser = require('body-parser');
-const PackageService = require("../services/PackageService");
 const {Kafka} = require('kafkajs')
 
+const kafka = new Kafka({
+    clientId: 'my-app',
+    brokers: ['kafka:29091', 'kafka2:29092', 'kafka3:29093']
+});
 
-const app = express();
+const consumer = kafka.consumer({groupId: 'status-retriever'});
 
-setTimeout(() => {
-
-    const kafka = new Kafka({
-        clientId: 'my-app',
-        brokers: ['kafka:29091', 'kafka2:29092', 'kafka3:29093']
-    });
-
-    const consumer = kafka.consumer({groupId: 'db-interface'});
-
-    const run = async() => {
+module.exports = class KafkaController {
+    
+    static async getData() {
         await consumer.connect()
         await consumer.subscribe({topic: 'sensor_data', fromBeginning: true});
         
@@ -58,18 +51,8 @@ setTimeout(() => {
                     sensor = "vacuum";
                     console.log(`Vacuum message to be inserted = ${params}`);
                 }
-                // PackageService.insertData(sensor, params);
+                return params;
             }
         });
     }
-
-    run();
-
-    app.use(bodyParser.json());
-    app.use(cors());
-    app.use(express.json());
-
-    const port = process.env.PORT || 4004;
-
-    app.listen(port, () => console.log(`Test sensor started on port ${port}`));
-}, 10000);
+}
