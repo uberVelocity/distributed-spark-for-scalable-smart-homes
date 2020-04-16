@@ -1,6 +1,7 @@
 from pyspark import SparkContext, SparkConf
 from pyspark.sql import SQLContext
-from pyspark.sql.functions import mean as _mean, stddev as _stddev, col
+from pyspark.sql import functions as F
+from pyspark.sql.functions import col
 
 import pyspark
 
@@ -62,31 +63,37 @@ def compute_coefficients(df, column):
     :param column: String of the column name.
     :return: (min value, max value)
     """
-    n = df.select("id").count()
 
-    # Select desired column and filter out all values higher than -1
-    df = df.select(col(column)).filter(column + " > -1")
+    # Filter out all values in column higher than -1
+    df = df.select(col("t"), col(column)).where(column + " > -1")
+    n = df.select("t").count()
 
-    # -1 values are excluded as these are used as sensor malfunction labeling.
-    max_val = df.max(column)
-    min_val = df.min(column)
+    # Compute required statistics
+    df_stats = df.select(
+        F.mean(col(column)).alias('mean_' + column),
+        F.mean(col("t")).alias('mean_t'),
+        F.max(col(column)).alias('max_' + column),
+        F.min(col(column)).alias('min_' + column),
+        F.sum(col(column) * col("t")).alias("sum(" + column + "*t)"),
+        F.sum(col("t") * col("t")).alias("sum(t^2)")
+    ).collect()[0]
 
     # Regression
-    mean_t = df.mean("t")
-    mean_var = df.mean(column)
+    mean_t = df_stats['mean_t']
+    mean_var = df_stats['mean_' + column]
 
-    SS_tvar = df.withColumn(column + "*t", col(column) * col("t")).sum() - n*mean_var*mean_t
-    SS_tt = df.select("t2").sum() - n*mean_t*mean_t
+    SS_tvar = df_stats["sum(" + column + "*t)"] - n*mean_var*mean_t
+    SS_tt = df_stats["sum(t^2)"] - n*mean_t*mean_t
 
     a = SS_tvar / SS_tt
     b = mean_var - a * mean_t
 
-    print()
-    print(column)
-    print((a, b, min_val, max_val))
-    print()
+    # print()
+    # print("Summary of " + str(column))
+    # print((a, b, df_stats['min_' + column], df_stats['max_' + column]))
+    # print(flush=True)
 
-    return a, b, min_val, max_val
+    return df_stats['min_' + column], df_stats['min_' + column], a, b
 
 
 def get_coefficients_for(df):
@@ -96,20 +103,16 @@ def get_coefficients_for(df):
     :return: List containing tuples (a, b, max, min) with linear regression coefficients and limits.
     """
 
-    n = df.withColumn("t2", col("t")*col("t")).count()
-
-    results = spark_context.parallelize(range(4, len(df.schema.names)))
-    results = results.map(
-        lambda x: (
-            df.schema.names[x],
-            compute_coefficients(df, df.schema.names[x])
-        )
-    )
+    results = []
+    for column in df.schema.names[4:]:
+        results.append((column, compute_coefficients(df, column)))
 
     return results
 
 
 if __name__ == '__main__':
+
+    models = ['heaters']
 
     spark_config = SparkConf()
     spark_config.set('spark.cassandra.connection.host', 'cassandra-cluster')
@@ -117,14 +120,9 @@ if __name__ == '__main__':
     spark_context = SparkContext(master='spark://spark-master:7077', appName='regression', conf=spark_config)
     sql_context = SQLContext(spark_context)  # needed to be able to query data.
 
-    heaters = load_and_get_table_df('household', 'heaters')
-    heaters.show()
-
-    parameters = get_coefficients_for(heaters)
-
-    print()
-    print(parameters)
-    print()
+    for model in models:
+        df = load_and_get_table_df('household', model)
+        coefficients = get_coefficients_for(df)
 
     # Finish
     spark_context.stop()
