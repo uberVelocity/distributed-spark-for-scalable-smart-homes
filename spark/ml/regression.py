@@ -88,31 +88,36 @@ def compute_coefficients(df, column):
     a = SS_tvar / SS_tt
     b = mean_var - a * mean_t
 
-    # print()
-    # print("Summary of " + str(column))
-    # print((a, b, df_stats['min_' + column], df_stats['max_' + column]))
-    # print(flush=True)
+    print()
+    print("Summary of " + str(column))
+    print((a, b, df_stats['min_' + column], df_stats['max_' + column]))
+    print(flush=True)
 
     return df_stats['min_' + column], df_stats['min_' + column], a, b
 
 
-def get_coefficients_for(df):
+def update_coefficients_for(df):
     """
-    Gets the a, b and limit coefficients per parameter column for use in prediction.
+    Gets the a, b and limit coefficients per parameter column and pushes them to Kafka.
     :param df: DataFrame containing the training data.
     :return: List containing tuples (a, b, max, min) with linear regression coefficients and limits.
     """
 
     results = []
-    for column in df.schema.names[4:]:
+    excluded = ['id', 'model', 't', 'ts']
+    for column in [name for name in df.schema.names if name not in excluded]:
         results.append((column, compute_coefficients(df, column)))
 
-    return results
+    print()
+    print(f"Coefficients for {model} = {results}")
+    print(flush=True)
+
+    # push to kafka
 
 
 if __name__ == '__main__':
 
-    models = ['heaters']
+    models = ['heaters', 'lamps', 'vacuums']
 
     spark_config = SparkConf()
     spark_config.set('spark.cassandra.connection.host', 'cassandra-cluster')
@@ -121,8 +126,8 @@ if __name__ == '__main__':
     sql_context = SQLContext(spark_context)  # needed to be able to query data.
 
     for model in models:
-        df = load_and_get_table_df('household', model)
-        coefficients = get_coefficients_for(df)
+        frame = load_and_get_table_df('household', model)
+        update_coefficients_for(frame)
 
     # Finish
     spark_context.stop()
