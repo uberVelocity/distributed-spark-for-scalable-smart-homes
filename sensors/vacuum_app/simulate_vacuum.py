@@ -1,74 +1,24 @@
-from sensor import Sensor
-from time import sleep
-from datetime import datetime
-from json import dumps
-from kafka import KafkaProducer
-from kafka.errors import NoBrokersAvailable
-
-
-def on_send_success(metadata):
-    print(metadata.topic)
-    print(metadata.partition)
-    print(metadata.offset)
-
-
-def on_send_error(excp):
-    print(f'I am an errback {excp}')
-    # handle exception
-
+import sensors.sensor as sensor
+from sensors import Variable
 
 if __name__ == '__main__':
-    watt_params = {
-        'a': 1.2,
-        'b': 150,
-        'variance': 1,
-        'limit': 200
-    }
 
-    suction_params = {
-        'a': -0.2,
-        'b': 100,
-        'variance': 1,
-        'limit': 80,
-    }
+    watts = Variable(
+            name='wattage',
+            a=0.3,
+            b=150,
+            variance=1,
+            limit=200
+    )
 
-    producer = None
-    while not producer:
-        try:
-            producer = KafkaProducer(
-                bootstrap_servers=['kafka:29091'],
-                key_serializer=lambda m: str(m).encode(),  # transforms id string to bytes
-                value_serializer=lambda m: dumps(m).encode('ascii')  # transforms messages to json bytes
-            )
-        except NoBrokersAvailable:
-            print('No brokers available, sleeping', flush=True)
-            sleep(5)
+    suction = Variable(
+        name='suction',
+        a=-0.005,
+        b=100,
+        variance=1,
+        limit=80
+    )
 
-    lamp = Sensor(watt_params, suction_params)
-
-    t = 0
-    while True:
-        if t == 50 or not lamp.on:   # break when appliance is broken or enough time has passed
-            break
-
-        timestamp = datetime.utcnow().timestamp()
-        wattage = lamp.compute_var1(t)
-        suction = lamp.compute_var2(t)
-
-        print(f"Device {lamp.id}: time({t}) = {timestamp}", flush=True)
-        print(f"Device {lamp.id}: wattage({t}) = {wattage}")
-        print(f"Device {lamp.id}: suction({t}) = {suction}")
-
-        msg = {
-            'id': lamp.id,
-            'timestamp': timestamp,
-            'sensors': {
-                'suction': suction,
-                'wattage': wattage,
-            }
-        }
-
-        # Stream data and and sleep for 4 seconds between update.
-        producer.send('sensor_data', key=lamp.id, value=msg).add_callback(on_send_success).add_errback(on_send_error)
-        t += 1
-        sleep(4)
+    # create heater sensor and run it
+    vacuum = sensor.Sensor('vacuum', [watts, suction])
+    vacuum.run_simulation()
