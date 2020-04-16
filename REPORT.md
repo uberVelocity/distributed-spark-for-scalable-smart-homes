@@ -17,18 +17,24 @@ The following application monitors the status of appliances within a household a
 
 ### Database 
 <!-- Type of database used (NoSQL CassandraDB) -->
+CassandraDB was the NoSQL database of choice in order to fascilitate horizontal scalability and storing fast time-series data.
 
 <!-- Advantages of using said database -->
+Due to the fact that CassandraDB uses SSTables with consistent hashing, reading on one particular row is very fast.
 
 <!-- Replicability strategy -->
-
+Each instance of Cassandra uses a replication factor of 3 per created table.
 <!-- Compaction -->
+A compaction strategy is implemented per each table.
 
 <!-- Interface of Database -->
+As sensors send historical data through Kafka, a service layer that ingests the data and abstracts accessibility to the database was created. With this, sensors do not have direct access to the database and the rate at which data is inserted into the database can be controlled. 
 
 <!-- What do you store in it (what tables, historical data) -->
+The database contains a keyspace `household` that has three tables, one for each type of sensor that store historical data, and one `predictions` table that stores the results of our model.  
 
 <!-- Initialization of database -->
+The tables are created automatically during its initialization through the use of the `cassandra-init.sh` script.
 
 ### Message broker
 <!-- Reasons for using Kafka w/ Zookeeper -->
@@ -51,8 +57,10 @@ The following application monitors the status of appliances within a household a
 
 ### Containerization
 <!-- Docker containers -->
+Every service has been containerized and managed using Docker and `docker-compose`.
 
 <!-- Volumes used for Cassandra, Kafka, and Zookeeper -->
+Separate volumes were created for containers that are stateful in nature (i.e. Cassandra, Kafka, and Zookeeper). Every service communicated with one another through a bridge network named `household-network`.
 
 ### Kubernetes
 <!-- Orchestration platform -->
