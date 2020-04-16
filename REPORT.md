@@ -64,12 +64,13 @@ Separate volumes were created for containers that are stateful in nature (i.e. C
 
 ### Kubernetes
 <!-- Orchestration platform -->
-
-<!-- Deployment on Minikube -->
+Each service was deployed within the Kubernetes infrastructure locally on Minikube through the files specified in the `Kubernetes` folder. Worth mentioning is the fact that services which are stateful are implemented via `StatefulSets`.
 
 <!-- Deployment on GCP -->
+As of writing this, the application is not yet deployed on Google Cloud Platform, however we intend to make this transition before the demo.
 
 ### Frontend
 <!-- What data is visualized -->
+A simple webpage was built that shows
 
 <!-- How does that gata get there -->
