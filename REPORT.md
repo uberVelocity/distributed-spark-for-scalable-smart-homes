@@ -53,12 +53,14 @@ The tables are created automatically during its initialization through the use o
 
 ## Message broker
 <!-- Reasons for using Kafka w/ Zookeeper -->
-
+Apache Kafka was chosen to be the message broker for the system. The Kafka brokers are supervised by a Zookeeper server. 
 <!-- Replicated brokers (there are three) -->
-
+A cluster of three Kafka brokers is used to handle messages and it has a replication factor of 3 in order to minimize the chances of data loss.
 <!-- Topics created and why (who are producers / consumers) -->
-
-<!-- Historical / Streaming data -->
+There are three topics used for transmitting messages between the subservices:
+- sensor_data: the sensors produce messages into this topic and the streaming layer and db-interface consume the messages from it;
+- coefficients: the historical computational layer produces coefficients for the linear regression into this topic and the streaming computational layer consumes the messages from it;
+- predictions: the streaming computational layer produces messages into this topic and the status_retriever consumes from it;
 
 ## Computational layer
 <!-- Spark cluster specification (historical train / streaming predict) -->
