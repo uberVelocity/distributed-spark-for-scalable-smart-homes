@@ -32,10 +32,13 @@
     </b-navbar>
     <h1>Home</h1>
       <button @click="getData()">Heater</button>
+      <label>Heater: {{heater}} hours</label>
       <br>
-      <textarea readonly name="timeStampText" id="timeStampText" cols="30" rows="30" v-model="timeStampText"></textarea>
+      <label>Lamp: {{lamp}} hours</label>
       <br>
-      <textarea readonly name="valuesText" id="valuesText" cols="30" rows="30" v-model="valuesText"></textarea>
+      <label>Vacuum: {{vacuum}} hours</label>
+      <br>
+      <label>Wattage: {{wattage}}</label>
   </div>
 </template>
 
@@ -44,8 +47,10 @@ import StatusRetriever from '../services/StatusRetriever'
 export default {
   data() {
     return {
-      timeStampText: '',
-      valuesText: ''
+      heater: 0,
+      vacuum: 0,
+      lamp: 0,
+      wattage: 0
     }
   },
   methods: {
@@ -56,8 +61,13 @@ export default {
       this.$router.push('/');
     },
     async getData() {
-      const data = await StatusRetriever.getStatus();
-      alert(`received something: ${data}`);
+      const req = await StatusRetriever.getStatus();
+      console.log(`predictions = ${req.data.predictions}`);
+      const data = req.data.predictions;
+      for (let i = 0; i < 6; i++) {
+        console.log(`data[${i}] = ${data[i]}`);
+      }
+      this.wattage = data[4];
     },
     formatTimeStamps(data) {
       this.timeStampText = '';

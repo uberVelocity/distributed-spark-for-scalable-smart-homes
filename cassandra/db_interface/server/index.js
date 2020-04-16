@@ -58,7 +58,7 @@ setTimeout(() => {
                     sensor = "vacuum";
                     console.log(`Vacuum message to be inserted = ${params}`);
                 }
-                // PackageService.insertData(sensor, params);
+                PackageService.insertData(sensor, params);
             }
         });
     }
