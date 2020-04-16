@@ -64,8 +64,9 @@ There are three topics used for transmitting messages between the subservices:
 
 ## Computational layer
 <!-- Spark cluster specification (historical train / streaming predict) -->
+In terms of the spark node architecture, two nodes are being used in this system. One of them is used to submit an application, while the other one performs the actual computations by running the application.
 
-<!-- Spark node that submits application -->
+There are two applications built for spark that are used in this system:
 
 ### Historical data
 <!-- Implementation of historical -->
@@ -79,6 +80,7 @@ for use by the prediction job.
 
 ### Streaming data
 <!-- Implementation of streaming -->
+The streaming part of the computational layer is where the appliance life time predictions are computed in real time. By using the latest coefficients computed by the linear regression we can determine the estimated time step at which the given appliance will break. Then, by subtracting from that the current number of time steps of the above mentioned appliance, we can compute its estimated remaining lifetime.
 
 ### Containerization
 <!-- Docker containers -->
@@ -99,4 +101,4 @@ As of writing this, the application is not yet deployed on Google Cloud Platform
 A simple webpage was built that shows the predicted lifetime expectancies for the current household. The webpage was created in Vue.js and loads the latest results from Cassandra through a service.
 
 ### System pipeline
-Sensors produce data continuously and stream it into a Kafka topic named `sensor_data`. The `db-interface` consumer ingests each message and inserts them as soon as they arrive into `cassandra-cluster`. Whenever a training job is submitted, data from Cassandra is ingested into Spark through Kafka and the regression parameters are trained. Whenever a request to predict the lifetime of the appliances is made, the trained parameters are used to predict lifetime based on incoming data from the sensors on the spark cluster. The result is sent to a Kafka topic named `predictions` that is then received by a database interface to be stored into Cassandra. Finally, whenever the user wants to see the lifetime of their appliances, a request is made to retrieve the latest predictions.
+Sensors produce data continuously and stream it into a Kafka topic named `sensor_data`. The `db-interface` consumer ingests each message and inserts them as soon as they arrive into `cassandra-cluster`. Whenever a training job is submitted, data from Cassandra is ingested into Spark through Kafka and the regression parameters are trained. Whenever a request to predict the lifetime of the appliances is made, the trained parameters are used to predict lifetime based on incoming data from the sensors. The result is sent to a Kafka topic named `predictions` that is then received by a database interface to be stored into Cassandra. Finally, whenever the user wants to see the lifetime of their appliances, a request is made to retrieve the latest predictions.
