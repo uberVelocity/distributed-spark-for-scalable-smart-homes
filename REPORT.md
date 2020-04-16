@@ -44,8 +44,6 @@ The tables are created automatically during its initialization through the use o
 
 <!-- Topics created and why (who are producers / consumers) -->
 
-<!-- Historical / Streaming data -->
-
 ### Computational layer
 <!-- Spark cluster specification (historical train / streaming predict) -->
 
