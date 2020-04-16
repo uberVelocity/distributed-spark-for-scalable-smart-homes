@@ -2,8 +2,13 @@ from pyspark import SparkContext, SparkConf
 from pyspark.sql import SQLContext
 from pyspark.sql import functions as F
 from pyspark.sql.functions import col
+from kafka import KafkaProducer
+from kafka.errors import NoBrokersAvailable
+from time import sleep
 
 import pyspark
+import json
+import os
 
 
 def load_and_get_table_df(keys_space_name, table_name):
@@ -106,13 +111,20 @@ def update_coefficients_for(df):
     results = []
     excluded = ['id', 'model', 't', 'ts']
     for column in [name for name in df.schema.names if name not in excluded]:
-        results.append((column, compute_coefficients(df, column)))
 
-    print()
-    print(f"Coefficients for {model} = {results}")
-    print(flush=True)
+        min, max, a, b = compute_coefficients(df, column)
 
-    # push to kafka
+        print()
+        print(f"Coefficients for {model}:{column} = {min, max, a, b}")
+        print(flush=True)
+
+        results.append({
+            "variable": column,
+            "min": min,
+            "max": max,
+            "a": a,
+            "b": b
+        })
 
 
 if __name__ == '__main__':
@@ -125,9 +137,32 @@ if __name__ == '__main__':
     spark_context = SparkContext(master='spark://spark-master:7077', appName='regression', conf=spark_config)
     sql_context = SQLContext(spark_context)  # needed to be able to query data.
 
+    # Get the kafka brokers from the env variables
+    kafka_servers = os.environ.get('KAFKA').replace("'", "").split(":")
+    kafka_servers = [server.replace("-", ":") for server in kafka_servers]
+
+    producer = None
+    while not producer:
+        try:
+            producer = KafkaProducer(
+                bootstrap_servers=kafka_servers,
+                key_serializer=lambda m: str(m).encode(),  # transforms id string to bytes
+                value_serializer=lambda m: json.dumps(m).encode('ascii')  # transforms messages to json bytes
+            )
+        except NoBrokersAvailable:
+            print('No brokers available, sleeping', flush=True)
+            sleep(5)
+
     for model in models:
         frame = load_and_get_table_df('household', model)
-        update_coefficients_for(frame)
+
+        msg = {
+            "model": model,
+            "variables": update_coefficients_for(frame)
+        }
+
+        # push to kafka
+        producer.send('coefficients', key=model, value=msg)
 
     # Finish
     spark_context.stop()
