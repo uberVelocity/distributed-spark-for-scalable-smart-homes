@@ -24,11 +24,12 @@ Due to the fact that CassandraDB uses SSTables with consistent hashing, reading 
 
 <!-- Replicability strategy -->
 Each instance of Cassandra uses a replication factor of 3 per created table.
+
 <!-- Compaction -->
 A compaction strategy is implemented per each table.
 
 <!-- Interface of Database -->
-As sensors send historical data through Kafka, a service layer that ingests the data and abstracts accessibility to the database was created. With this, sensors do not have direct access to the database and the rate at which data is inserted into the database can be controlled. 
+As sensors send historical data through Kafka, a service layer written in Node.js (`db-interface`) that ingests the data and abstracts accessibility to the database was created. With this, sensors do not have direct access to the database and the rate at which data is inserted into the database can be controlled. 
 
 <!-- What do you store in it (what tables, historical data) -->
 The database contains a keyspace `household` that has three tables, one for each type of sensor that store historical data, and one `predictions` table that stores the results of our model.  
@@ -54,7 +55,6 @@ The tables are created automatically during its initialization through the use o
 
 <!-- Implementation of streaming -->
 
-
 ### Containerization
 <!-- Docker containers -->
 Every service has been containerized and managed using Docker and `docker-compose`.
@@ -71,7 +71,7 @@ As of writing this, the application is not yet deployed on Google Cloud Platform
 
 ### Frontend
 <!-- What data is visualized -->
-A simple webpage was built that shows the predicted lifetime expectancies for the current household. The webpage was created in Vue.js and loads the latest results from Cassandra through a service.
+A simple webpage was built that shows the predicted lifetime expectancies for the current household. The webpage was created in Vue.js and loads the latest results from Cassandra through the (`status_retriever`) service.
 
 ### System pipeline
 Sensors produce data continuously and stream it into a Kafka topic named `sensor_data`. The `db-interface` consumer ingests each message and inserts them as soon as they arrive into `cassandra-cluster`. Whenever a training job is submitted, data from Cassandra is ingested into Spark through Kafka and the regression parameters are trained. Whenever a request to predict the lifetime of the appliances is made, the trained parameters are used to predict lifetime based on incoming data from the sensors. The result is sent to a Kafka topic named `predictions` that is then received by a database interface to be stored into Cassandra. Finally, whenever the user wants to see the lifetime of their appliances, a request is made to retrieve the latest predictions.
