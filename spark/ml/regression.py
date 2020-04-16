@@ -55,31 +55,38 @@ def load_and_get_table_df(keys_space_name, table_name):
 #     return transformed
 
 
-def compute_limits(df, column):
+def compute_coefficients(df, column):
     """
     Computes min and max values for the given DataFrame column
     :param df: DataFrame to be used.
     :param column: String of the column name.
     :return: (min value, max value)
     """
+    n = df.select("id").count()
 
     # Select desired column and filter out all values higher than -1
-    df = df.select(col(column).alias('var')).filter("var > -1")
+    df = df.select(col(column)).filter(column + " > -1")
 
     # -1 values are excluded as these are used as sensor malfunction labeling.
-    max_val = df.max("var")
-    min_val = df.min("var")
+    max_val = df.max(column)
+    min_val = df.min(column)
+
+    # Regression
+    mean_t = df.mean("t")
+    mean_var = df.mean(column)
+
+    SS_tvar = df.withColumn(column + "*t", col(column) * col("t")).sum() - n*mean_var*mean_t
+    SS_tt = df.select("t2").sum() - n*mean_t*mean_t
+
+    a = SS_tvar / SS_tt
+    b = mean_var - a * mean_t
 
     print()
     print(column)
-    print("Max: " + str(max_val) + "\nMin: " + str(min_val))
+    print((a, b, min_val, max_val))
     print()
 
-    return min_val, max_val
-
-
-def linear_regression(df, column):
-    return 0, 0
+    return a, b, min_val, max_val
 
 
 def get_coefficients_for(df):
@@ -89,12 +96,13 @@ def get_coefficients_for(df):
     :return: List containing tuples (a, b, max, min) with linear regression coefficients and limits.
     """
 
+    n = df.withColumn("t2", col("t")*col("t")).count()
+
     results = spark_context.parallelize(range(4, len(df.schema.names)))
     results = results.map(
         lambda x: (
             df.schema.names[x],
-            linear_regression(df, df.schema.names[x]),
-            compute_limits(df, df.schema.names[x])
+            compute_coefficients(df, df.schema.names[x])
         )
     )
 
