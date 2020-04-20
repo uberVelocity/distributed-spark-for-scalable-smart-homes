@@ -35,10 +35,10 @@ services:
     #   driver: "none"
 
  # Inserts data into cassandra
-  statusretriever:
-    container_name: statusretriever
+  predictionconsumer:
+    container_name: prediction-consumer
     restart: always
-    build: status_retriever
+    build: prediction_consumer
     ports:
       - 3005:3005
     networks:
