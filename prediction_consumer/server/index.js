@@ -22,7 +22,7 @@ setTimeout(() => {
         brokers: ['kafka:29091', 'kafka2:29092', 'kafka3:29093']
     });
     
-    const consumer = kafka.consumer({groupId: 'status-retriever'});
+    const consumer = kafka.consumer({groupId: 'prediction-consumer'});
 
     const run = async() => {
         await consumer.connect();
@@ -38,8 +38,8 @@ setTimeout(() => {
                 
                 const id = data["id"];
                 const model = data["model"];
-                console.log(`id: ${id}, model: ${model}`);
-                const params = [id, model];
+                const number = Math.random();
+                const params = [id, model, number];
                 ResultService.insertPrediction(params);
             }
         });
@@ -47,7 +47,7 @@ setTimeout(() => {
 
     run();
 
-    app.listen(port, () => console.log(`Status retriever started on port ${port}`));
+    app.listen(port, () => console.log(`Prediction consumer started on port ${port}`));
 }, 10000);
 
 
