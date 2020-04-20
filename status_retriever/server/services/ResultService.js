@@ -12,7 +12,7 @@ const clientOptions = {
 };
 let cassandraClient = new cassandra.Client(clientOptions);
 
-const insertResultQuery = 'INSERT INTO predictions(id, timeEstimate) VALUES(?, ?)';
+const insertResultQuery = 'INSERT INTO predictions(id, model) VALUES(?, ?)';
 
 module.exports = class PackageService {
     // Commit sensory data to Cassandra Cluster

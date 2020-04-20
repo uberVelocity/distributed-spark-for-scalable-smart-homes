@@ -37,8 +37,9 @@ setTimeout(() => {
                 const data = JSON.parse(message.value.toString());
                 
                 const id = data["id"];
-                const timeEstimate = data["model"];
-                const params = [id, timeEstimate];
+                const model = data["model"];
+                console.log(`id: ${id}, model: ${model}`);
+                const params = [id, model];
                 ResultService.insertPrediction(params);
             }
         });
