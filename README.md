@@ -1,4 +1,4 @@
-# 2020_group_09_s2534657_s3192423_s3083357
+# Household appliances lifetime prediction
 
 ## Running the code
 For now we have a data production and consumption demo. This can be ran using:

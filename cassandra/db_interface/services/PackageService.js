@@ -41,7 +41,6 @@ module.exports = class PackageService {
                 console.log(err);
             }
         });
-        
     }
 }
 

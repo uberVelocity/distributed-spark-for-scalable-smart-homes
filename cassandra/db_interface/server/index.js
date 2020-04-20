@@ -51,7 +51,7 @@ setTimeout(() => {
                     sensor = "lamp";
                     console.log(`Lamp message to be inserted = ${params}`);
                 }
-                else if (message.value.toString().includes("suction")) {
+                else if (model == "vacuum") {
                     const suction = variables["suction"];
                     const wattage = variables["wattage"];
                     params = [id, model, t, timestamp, wattage, suction];
@@ -69,7 +69,10 @@ setTimeout(() => {
     app.use(cors());
     app.use(express.json());
 
+    const prediction = require('../routes/api/prediction');
+
+    app.use('/api/prediction', prediction);
     const port = process.env.PORT || 4004;
 
-    app.listen(port, () => console.log(`Test sensor started on port ${port}`));
+    app.listen(port, () => console.log(`Database interface started on port ${port}`));
 }, 10000);

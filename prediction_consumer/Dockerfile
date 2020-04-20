@@ -1,7 +1,7 @@
 FROM node:10
 
 # Create app directory
-WORKDIR history_retriever
+WORKDIR predictionconsumer
 
 # Install app dependencies
 COPY package*.json ./
@@ -11,6 +11,6 @@ RUN npm install
 # Bundle app source
 COPY . .
 
-EXPOSE 4002
+EXPOSE 3005
 
 CMD ["node", "server/index.js"]

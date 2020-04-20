@@ -16,8 +16,8 @@ volumes:
     driver: local
 
 services:
+# Cassandra infrastructure
 
-  # Cassandra infrastructure
   cassandra-cluster:
     container_name: cassandra-cluster
     restart: always
@@ -34,8 +34,18 @@ services:
       - 9160
     logging:
       driver: "none"
+      
+ # Inserts data into cassandra
+  predictionconsumer:
+    container_name: prediction-consumer
+    restart: always
+    build: prediction_consumer
+    ports:
+      - 3005:3005
+    networks:
+      - household-network
 
-  # Inserts data into cassandra
+#  Inserts data into cassandra
   db-interface:
     container_name: dbinterface
     restart: always
@@ -44,9 +54,8 @@ services:
       - 4004:4004
     networks:
       - household-network
-    # logging:
-    #   driver: "none"
-
+    logging:
+      driver: "none"
 
   # Zookeeper
   zookeeper:
@@ -194,69 +203,7 @@ services:
     logging:
       driver: "none"
 
-# Spark infrastructure
-  spark-master:
-    container_name: spark-master
-    networks:
-      - household-network
-    build: spark/spark_master/
-    environment:
-      - SPARK_MODE=master
-      - SPARK_RPC_AUTHENTICATION_ENABLED=no
-      - SPARK_RPC_ENCRYPTION_ENABLED=no
-      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
-      - SPARK_SSL_ENABLED=no
-    ports:
-      - '7077:7077'
-
-  spark-worker-1:
-    container_name: spark_worker_1
-    image: bitnami/spark:2.4.5
-    networks:
-      - household-network
-    environment:
-      - SPARK_MODE=worker
-      - SPARK_MASTER_URL=spark://spark-master:7077
-      - SPARK_WORKER_MEMORY=1G
-      - SPARK_WORKER_CORES=1
-      - SPARK_RPC_AUTHENTICATION_ENABLED=no
-      - SPARK_RPC_ENCRYPTION_ENABLED=no
-      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
-      - SPARK_SSL_ENABLED=no
-
-
-  spark-worker-2:
-    container_name: spark_worker_2
-    image: bitnami/spark:2.4.5
-    networks:
-      - household-network
-    environment:
-      - SPARK_MODE=worker
-      - SPARK_MASTER_URL=spark://spark-master:7077
-      - SPARK_WORKER_MEMORY=1G
-      - SPARK_WORKER_CORES=1
-      - SPARK_RPC_AUTHENTICATION_ENABLED=no
-      - SPARK_RPC_ENCRYPTION_ENABLED=no
-      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
-      - SPARK_SSL_ENABLED=no
-
-  # Spark node used for submitting pyspark applications
-  spark:
-    build: spark/ml/
-    container_name: 'spark'
-    environment:
-      - KAFKA='kafka-29091':'kafka2-29092':'kafka3-29093'
-      - SPARK_MODE=master
-      - SPARK_RPC_AUTHENTICATION_ENABLED=no
-      - SPARK_RPC_ENCRYPTION_ENABLED=no
-      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
-      - SPARK_SSL_ENABLED=no
-    ports:
-      - '8080:8080'
-    networks:
-      - household-network
-  
-  # Frontend
+  # Frontend for showcasing predictions (localhost:80)
   frontend:
     container_name: frontend
     restart: always
@@ -265,19 +212,67 @@ services:
       - '80:80'
     networks:
       - household-network
-    logging:
-      driver: "none"
+    # logging:
+    #   driver: "none"
 
-  # Service that retrieves sensor information from cassandra
-  history-retriever:
-    container_name: history
-    restart: always
-    build: history_retriever
-    ports:
-      - '4002:4002'
-    networks:
-      - household-network
-    logging:
-      driver: "none"
-
+## Spark infrastructure
+#  spark-master:
+#    container_name: spark-master
+#    networks:
+#      - household-network
+#    build: spark/spark_master/
+#    environment:
+#      - SPARK_MODE=master
+#      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+#      - SPARK_RPC_ENCRYPTION_ENABLED=no
+#      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+#      - SPARK_SSL_ENABLED=no
+#    ports:
+#      - '7077:7077'
+#
+#  spark-worker-1:
+#    container_name: spark_worker_1
+#    image: bitnami/spark:2.4.5
+#    networks:
+#      - household-network
+#    environment:
+#      - SPARK_MODE=worker
+#      - SPARK_MASTER_URL=spark://spark-master:7077
+#      - SPARK_WORKER_MEMORY=1G
+#      - SPARK_WORKER_CORES=1
+#      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+#      - SPARK_RPC_ENCRYPTION_ENABLED=no
+#      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+#      - SPARK_SSL_ENABLED=no
+#
+#
+#  spark-worker-2:
+#    container_name: spark_worker_2
+#    image: bitnami/spark:2.4.5
+#    networks:
+#      - household-network
+#    environment:
+#      - SPARK_MODE=worker
+#      - SPARK_MASTER_URL=spark://spark-master:7077
+#      - SPARK_WORKER_MEMORY=1G
+#      - SPARK_WORKER_CORES=1
+#      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+#      - SPARK_RPC_ENCRYPTION_ENABLED=no
+#      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+#      - SPARK_SSL_ENABLED=no
+#
+#  # Spark node used for submitting pyspark applications
+#  spark:
+#    build: spark/ml/
+#    container_name: 'spark'
+#    environment:
+#      - SPARK_MODE=master
+#      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+#      - SPARK_RPC_ENCRYPTION_ENABLED=no
+#      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+#      - SPARK_SSL_ENABLED=no
+#    ports:
+#      - '8080:8080'
+#    networks:
+#      - household-network
   
