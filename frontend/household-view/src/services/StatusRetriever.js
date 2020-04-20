@@ -1,10 +1,10 @@
 import axios from 'axios';
 
-const url = "http://localhost:3005/api/status/";
+const url = "http://localhost:4004/api/prediction";
 
 class StatusRetriever {
     static async getStatus() {
-        return await axios.post(`${url}`);
+        return await axios.get(`${url}`);
     }
 }
 
