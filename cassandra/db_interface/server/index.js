@@ -69,7 +69,10 @@ setTimeout(() => {
     app.use(cors());
     app.use(express.json());
 
+    const prediction = require('../routes/api/prediction');
+
+    app.use('/api/prediction', prediction);
     const port = process.env.PORT || 4004;
 
-    app.listen(port, () => console.log(`Test sensor started on port ${port}`));
+    app.listen(port, () => console.log(`Database interface started on port ${port}`));
 }, 10000);

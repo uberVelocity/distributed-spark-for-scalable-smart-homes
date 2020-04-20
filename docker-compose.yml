@@ -45,16 +45,14 @@ services:
       - household-network
 
 #  Inserts data into cassandra
-  # db-interface:
-  #   container_name: dbinterface
-  #   restart: always
-  #   build: cassandra/db_interface
-  #   ports:
-  #     - 4004:4004
-  #   networks:
-  #     - household-network
-    # logging:
-    #   driver: "none"
+  db-interface:
+    container_name: dbinterface
+    restart: always
+    build: cassandra/db_interface
+    ports:
+      - 4004:4004
+    networks:
+      - household-network
 
   # Zookeeper
   zookeeper:

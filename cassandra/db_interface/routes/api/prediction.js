@@ -1,5 +1,4 @@
 const express = require('express');
-const mongodb = require('mongodb');
 const router = express.Router();
 
 const localDatacenter = 'datacenter1';
@@ -7,77 +6,50 @@ const cassandra = require('cassandra-driver');
 const contactPoints = ['cassandra-cluster', 'cassandra-cluster', 'cassandra-cluster'];
 const loadBalancingPolicy = new cassandra.policies.loadBalancing.DCAwareRoundRobinPolicy(localDatacenter); 
 
-const clientOptionsGw = {
+const clientOptionsHousehold = {
    policies : {
       loadBalancing : loadBalancingPolicy
    },
    contactPoints: contactPoints,
-   authProvider: new cassandra.auth.PlainTextAuthProvider('admin', 'q1w2e3r4'),
-   keyspace:'gw'
+   authProvider: new cassandra.auth.PlainTextAuthProvider('cassandra', 'cassandra'),
+   keyspace:'household'
 };
 
-const clientOptionsCo2 = {
-    policies : {
-        loadBalancing : loadBalancingPolicy
-     },
-     contactPoints: contactPoints,
-     authProvider: new cassandra.auth.PlainTextAuthProvider('admin', 'q1w2e3r4'),
-     keyspace:'co2'
-};
-
-const getAllPowerConsumption = 'SELECT value, ts FROM gwconsumptioncompaction WHERE server=?';
-const getAllCo2Emissions = 'SELECT value, ts FROM co2consumptioncompaction WHERE server=?';
+const getPredictions = 'SELECT * FROM predictions';
 
 // Get predictions based on ID
 router.get('/', async (req, res) => {
-    const gwHistory = await compileServerListWithHistory('power');
-    res.status(200).send(gwHistory);
+    const householdPredictions = await getHouseholdPredictions();
+    res.status(200).send(householdPredictions);
 });
 
-// Compiles and returns a list of values of a certain property (either CO2 or GW)
-// with timestamps from Cassandra FOR ALL SERVERS THAT ARE CURRENTLY IN MONGO (so not ones that have values)
-// but have been removed from the database
-async function compileServerListWithHistory(requestType) {
-    if (requestType === 'power') {
-        cassandraClient = new cassandra.Client(clientOptionsGw);
-        requestType = getAllPowerConsumption;
-    }
-    else if (requestType === 'co2') {
-        cassandraClient = new cassandra.Client(clientOptionsCo2);
-        requestType = getAllCo2Emissions;
-    }
-    else {
-        return 'err';
-    }
-    let nthServer = 0;
+// Retrieves a list of appliance ids with their corresponding predictions
+async function getHouseholdPredictions() {
+    cassandraClient = new cassandra.Client(clientOptionsHousehold)
+    request = getPredictions;
+
     let compiledList = [];
-    const servers = await getServersListFromMongo();
-    for (mongoServer of servers) {
-        params = [mongoServer._id.toString()];
-        await new Promise((resolve, reject) => {
-            cassandraClient.execute(requestType, params, (result, err) => {
-                if(err) {
-                    reject(err);
+    await new Promise((resolve, reject) => {
+        cassandraClient.execute(request, (result, err) => {
+            console.log(`SUCCESSFULLY EXECUTED QUERY`);
+            for (i = 0; i < err.rows.length; i ++) {
+                let appliance = {
+                    id: '',
+                    model: '',
+                    number: 9999.0
                 }
-                let newServer = {
-                    server: mongoServer._id.toString(),
-                    values: [],
-                    valuesTs: []
-                }
-                for (i = 0; i < err.rows.length; i ++) {
-                    newServer.values.push(err.rows[i].value);
-                    newServer.valuesTs.push(err.rows[i].ts);
-                }
-                compiledList.push(newServer);
-                nthServer += 1;
-                console.log(compiledList[0]);
-                resolve()
-            })
-        }).then(
-            response => {},
-            reason => {}
-        );
-    }
+                appliance.id = err.rows[i].id;
+                appliance.model = err.rows[i].model;
+                appliance.number = err.rows[i].number;
+                compiledList.push(appliance);
+            }
+            resolve()
+        })
+    }).then(
+        response => {},
+        reason => {}
+    );
+    console.log(`compiled list:${compiledList}`);
     return compiledList;
 }
 
