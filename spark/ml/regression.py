@@ -117,15 +117,14 @@ if __name__ == '__main__':
             print('No brokers available, sleeping', flush=True)
             sleep(5)
 
-    frame = load_and_get_table_df('household', model)
+    while True:
+        frame = load_and_get_table_df('household', model)
 
-    msg = {
-        "model": model,
-        "variables": update_coefficients_for(frame)
-    }
+        msg = {
+            "model": model,
+            "variables": update_coefficients_for(frame)
+        }
 
-    # push to kafka
-    producer.send('coefficients', key=model, value=msg)
-
-    # Finish
-    spark_context.stop()
+        # push to kafka
+        producer.send('coefficients', key=model, value=msg)
+        sleep(30)
