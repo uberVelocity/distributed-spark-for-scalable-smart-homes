@@ -35,12 +35,10 @@ async function getHouseholdPredictions() {
             for (i = 0; i < err.rows.length; i ++) {
                 let appliance = {
                     id: '',
-                    model: '',
-                    number: 9999.0
+                    deltaT: 9999
                 }
                 appliance.id = err.rows[i].id;
-                appliance.model = err.rows[i].model;
-                appliance.number = err.rows[i].number;
+                appliance.deltat = err.rows[i].deltat;
                 compiledList.push(appliance);
             }
             resolve()

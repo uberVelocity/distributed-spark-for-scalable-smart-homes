@@ -18,7 +18,7 @@ spec:
       terminationGracePeriodSeconds: 1800
       containers:
       - name: cassandra
-        image: ubervelocity/jeemz_cassandra
+        image: ubervelocity/sca_cassandra:1.0
         imagePullPolicy: Always
         ports:
         - containerPort: 7000
@@ -55,11 +55,11 @@ spec:
           - name: CASSANDRA_SEEDS
             value: "cassandra-0.cassandra.default.svc.cluster.local"
           - name: CASSANDRA_CLUSTER_NAME
-            value: "K8Demo"
+            value: "cassandra-cluster"
           - name: CASSANDRA_DC
-            value: "DC1-K8Demo"
+            value: "datacenter1"
           - name: CASSANDRA_RACK
-            value: "Rack1-K8Demo"
+            value: "rack1"
           - name: POD_IP
             valueFrom:
               fieldRef:

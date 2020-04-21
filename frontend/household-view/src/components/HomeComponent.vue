@@ -8,7 +8,7 @@
         v-bind:index="index"
         v-bind:key="device.id"
       >
-        {{ `${device.id}: ${device.number}` }}
+        {{ `${device.id}: ${device.deltaT}` }}
       </div>
     </div>
     <button @click="getData">Get predictions</button>
@@ -32,22 +32,8 @@ export default {
     },
     async getData() {
       const req = await StatusRetriever.getStatus();
-      console.log(`predictions = ${req.data}`);
       const data = req.data;
-      console.log(`id 1: ${data[0].id}, model 2: ${data[1].model}, number 3: ${data[2].number}`);
       this.devices = data;
-    },
-    formatTimeStamps(data) {
-      this.timeStampText = '';
-      data.forEach(value => {
-        this.timeStampText += value + '\n';
-      });
-    },
-    formatValues(data) {
-      this.valuesText = '';
-      data.forEach(value => {
-        this.valuesText += value + '\n';
-      });
     }
   }
 }
