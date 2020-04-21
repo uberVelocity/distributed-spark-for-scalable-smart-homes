@@ -18,22 +18,20 @@ volumes:
 services:
 
 # Cassandra infrastructure
-#   cassandra-cluster:
-#     container_name: cassandra-cluster
-#     restart: always
-#     build: ./cassandra/cassandra_build
-#     networks:
-#       - household-network
-#     volumes:
-#       - cassandra-volume:/var/lib/cassandra
-#     expose:
-#       - 7000
-#       - 7001
-#       - 7199
-#       - 9042
-#       - 9160
-#     logging:
-#       driver: "none"
+  cassandra-cluster:
+    container_name: cassandra-cluster
+    restart: always
+    build: ./cassandra/cassandra_build
+    networks:
+      - household-network
+    volumes:
+      - cassandra-volume:/var/lib/cassandra
+    expose:
+      - 7000
+      - 7001
+      - 7199
+      - 9042
+      - 9160
 
 #  # Inserts data into cassandra
 #   predictionconsumer:
@@ -46,14 +44,15 @@ services:
 #       - household-network
 
 # #  Inserts data into cassandra
-  db-interface:
-    container_name: dbinterface
-    restart: always
-    build: cassandra/db_interface
-    ports:
-      - 4004:4004
-    networks:
-      - household-network
+  # db-interface:
+  #   container_name: dbinterface
+  #   restart: always
+  #   build: cassandra/db_interface
+  #   image: ubervelocity/sca_dbinterface:1.0
+  #   ports:
+  #     - 4004:4004
+  #   networks:
+  #     - household-network
 
 #   # Zookeeper
 #   zookeeper:
@@ -150,16 +149,16 @@ services:
 #       - ZK_HOSTS=zookeeper:2181
 
   # Sensors
-  sensor_heater:
-    environment:
-      - KAFKA='kafka-29091':'kafka2-29092':'kafka3-29093'
-    container_name: sensor_heater
-    networks:
-      - household-network
-    build:
-      context: .
-      dockerfile: sensors/heater_app/Dockerfile
-    image: ubervelocity/sca_heater:1.0
+  # sensor_heater:
+  #   environment:
+  #     - KAFKA='kafka-29091':'kafka2-29092':'kafka3-29093'
+  #   container_name: sensor_heater
+  #   networks:
+  #     - household-network
+  #   build:
+  #     context: .
+  #     dockerfile: sensors/heater_app/Dockerfile
+  #   image: ubervelocity/sca_heater:1.0
     # depends_on:
     #   - zookeeper
     #   - kafka
@@ -168,16 +167,16 @@ services:
     # logging:
     #   driver: "none"
 
-  sensor_lamp:
-    environment:
-      - KAFKA='kafka-29091':'kafka2-29092':'kafka3-29093'
-    container_name: sensor_lamp
-    networks:
-      - household-network
-    build:
-      context: .
-      dockerfile: sensors/lamp_app/Dockerfile
-    image: ubervelocity/sca_lamp:1.0
+  # sensor_lamp:
+  #   environment:
+  #     - KAFKA='kafka-29091':'kafka2-29092':'kafka3-29093'
+  #   container_name: sensor_lamp
+  #   networks:
+  #     - household-network
+  #   build:
+  #     context: .
+  #     dockerfile: sensors/lamp_app/Dockerfile
+  #   image: ubervelocity/sca_lamp:1.0
 
     # depends_on:
     #   - zookeeper
@@ -187,16 +186,16 @@ services:
     # logging:
     #   driver: "none"
 
-  sensor_vacuum:
-    environment:
-      - KAFKA='kafka-29091':'kafka2-29092':'kafka3-29093'
-    container_name: sensor_vacuum
-    networks:
-      - household-network
-    build:
-      context: .
-      dockerfile: sensors/vacuum_app/Dockerfile
-    image: ubervelocity/sca_vacuum:1.0
+  # sensor_vacuum:
+  #   environment:
+  #     - KAFKA='kafka-29091':'kafka2-29092':'kafka3-29093'
+  #   container_name: sensor_vacuum
+  #   networks:
+  #     - household-network
+  #   build:
+  #     context: .
+  #     dockerfile: sensors/vacuum_app/Dockerfile
+  #   image: ubervelocity/sca_vacuum:1.0
 
     # depends_on:
     #   - zookeeper
