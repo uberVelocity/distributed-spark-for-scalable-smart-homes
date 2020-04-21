@@ -239,12 +239,44 @@ services:
       - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
       - SPARK_SSL_ENABLED=no
 
-  # Spark node used for submitting pyspark applications
+  # Spark nodes used for submitting pyspark applications
   spark-heater:
     build: spark/ml/
     container_name: 'spark-heater'
     environment:
       - MODEL:'heaters'
+      - KAFKA='kafka-29091':'kafka2-29092':'kafka3-29093'
+      - SPARK_MODE=master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+    ports:
+      - '8080:8080'
+    networks:
+      - household-network
+
+  spark-lamp:
+    build: spark/ml/
+    container_name: 'spark-lamp'
+    environment:
+      - MODEL:'lamps'
+      - KAFKA='kafka-29091':'kafka2-29092':'kafka3-29093'
+      - SPARK_MODE=master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+    ports:
+      - '8080:8080'
+    networks:
+      - household-network
+
+  spark-vacuum:
+    build: spark/ml/
+    container_name: 'spark-vacuum'
+    environment:
+      - MODEL:'vacuums'
       - KAFKA='kafka-29091':'kafka2-29092':'kafka3-29093'
       - SPARK_MODE=master
       - SPARK_RPC_AUTHENTICATION_ENABLED=no
