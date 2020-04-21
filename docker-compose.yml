@@ -18,20 +18,20 @@ volumes:
 services:
 
 # Cassandra infrastructure
-  cassandra-cluster:
-    container_name: cassandra-cluster
-    restart: always
-    build: ./cassandra/cassandra_build
-    networks:
-      - household-network
-    volumes:
-      - cassandra-volume:/var/lib/cassandra
-    expose:
-      - 7000
-      - 7001
-      - 7199
-      - 9042
-      - 9160
+  # cassandra-cluster:
+  #   container_name: cassandra-cluster
+  #   restart: always
+  #   build: ./cassandra/cassandra_build
+  #   networks:
+  #     - household-network
+  #   volumes:
+  #     - cassandra-volume:/var/lib/cassandra
+  #   expose:
+  #     - 7000
+  #     - 7001
+  #     - 7199
+  #     - 9042
+  #     - 9160
 
 #  # Inserts data into cassandra
 #   predictionconsumer:
@@ -52,22 +52,21 @@ services:
   #   ports:
   #     - 4004:4004
   #   networks:
-  #     - household-network
+  #     - household-network    app: zk-1
+
 
 #   # Zookeeper
-#   zookeeper:
-#     container_name: zookeeper
-#     image: 'bitnami/zookeeper:3'
-#     ports:
-#      - '2181:2181'
-#     volumes:
-#      - 'zookeeper_data:/bitnami'
-#     environment:
-#       - ALLOW_ANONYMOUS_LOGIN=yes
-#     networks:
-#       - household-network
-#     logging:
-#       driver: "none"
+  zookeeper:
+    container_name: zookeeper
+    image: 'bitnami/zookeeper:3'
+    ports:
+     - '2181:2181'
+    volumes:
+     - 'zookeeper_data:/bitnami'
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    networks:
+      - household-network
 
 #   # Kafka infrastructure
 #   kafka:
