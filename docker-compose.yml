@@ -17,35 +17,35 @@ volumes:
 
 services:
 
-#  # Cassandra infrastructure
-#  cassandra-cluster:
-#    container_name: cassandra-cluster
-#    restart: always
-#    build: ./cassandra/cassandra_build
-#    networks:
-#      - household-network
-#    volumes:
-#      - cassandra-volume:/var/lib/cassandra
-#    expose:
-#      - 7000
-#      - 7001
-#      - 7199
-#      - 9042
-#      - 9160
-#    logging:
-#      driver: "none"
+  # Cassandra infrastructure
+  cassandra-cluster:
+    container_name: cassandra-cluster
+    restart: always
+    build: ./cassandra/cassandra_build
+    networks:
+      - household-network
+    volumes:
+      - cassandra-volume:/var/lib/cassandra
+    expose:
+      - 7000
+      - 7001
+      - 7199
+      - 9042
+      - 9160
+    logging:
+      driver: "none"
 
-#  # Inserts data into cassandra
-#  db-interface:
-#    container_name: dbinterface
-#    restart: always
-#    build: cassandra/db_interface
-#    ports:
-#      - 4004:4004
-#    networks:
-#      - household-network
-##    logging:
-##      driver: "none"
+  # Inserts data into cassandra
+  db-interface:
+    container_name: dbinterface
+    restart: always
+    build: cassandra/db_interface
+    ports:
+      - 4004:4004
+    networks:
+      - household-network
+  #    logging:
+  #      driver: "none"
 
   # Zookeeper
   zookeeper:
@@ -245,6 +245,15 @@ services:
       - SPARK_SSL_ENABLED=no
     ports:
       - '8080:8080'
+    networks:
+      - household-network
+  
+  db-interface:
+    container_name: node_streaming
+    restart: always
+    build: spark/node_streaming_worker
+    ports:
+      - 4004:4004
     networks:
       - household-network
   

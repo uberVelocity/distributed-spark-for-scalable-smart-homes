@@ -65,4 +65,4 @@ setTimeout(() => {
     const port = process.env.PORT || 4004;
 
     app.listen(port, () => console.log(`Test sensor started on port ${port}`));
-}, 10000);
+}, 30000);
