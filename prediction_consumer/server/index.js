@@ -26,7 +26,7 @@ setTimeout(() => {
 
     const run = async() => {
         await consumer.connect();
-        await consumer.subscribe({topic: 'sensor_data', fromBeginning: false});
+        await consumer.subscribe({topic: 'predictions', fromBeginning: false});
         await consumer.run({
             eachMessage: async ({topic, partition, message}) => {
                 console.log({
@@ -37,9 +37,8 @@ setTimeout(() => {
                 const data = JSON.parse(message.value.toString());
                 
                 const id = data["id"];
-                const model = data["model"];
-                const number = Math.random();
-                const params = [id, model, number];
+                const deltat = data["deltat"];
+                const params = [id, deltat];
                 ResultService.insertPrediction(params);
             }
         });
@@ -49,8 +48,4 @@ setTimeout(() => {
 
     app.listen(port, () => console.log(`Prediction consumer started on port ${port}`));
 }, 10000);
-
-
-
-
 
