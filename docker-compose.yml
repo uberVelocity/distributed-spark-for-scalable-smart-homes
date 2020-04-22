@@ -291,6 +291,16 @@ services:
     networks:
       - household-network
   
+
+  node-streaming:
+    container_name: node_streaming
+    restart: always
+    build: spark/node_streaming_worker
+    ports:
+      - 4004:4004
+    networks:
+      - household-network
+      
   # Frontend
   frontend:
     container_name: frontend
