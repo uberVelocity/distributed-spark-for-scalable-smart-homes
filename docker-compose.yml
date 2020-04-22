@@ -166,42 +166,42 @@ services:
     logging:
       driver: "none"
 
-  sensor_lamp:
-    environment:
-      - KAFKA='kafka-29091':'kafka2-29092':'kafka3-29093'
-    container_name: sensor_lamp
-    networks:
-      - household-network
-    build:
-      context: .
-      dockerfile: sensors/lamp_app/Dockerfile
-    image: ubervelocity/sca_lamp:1.0
-    depends_on:
-      - zookeeper
-      - kafka
-      - kafka2
-      - kafka3
-    logging:
-      driver: "none"
-
-  sensor_vacuum:
-    environment:
-      - KAFKA='kafka-29091':'kafka2-29092':'kafka3-29093'
-    container_name: sensor_vacuum
-    networks:
-      - household-network
-    build:
-      context: .
-      dockerfile: sensors/vacuum_app/Dockerfile
-    image: ubervelocity/sca_vacuum:1.0
-
-    depends_on:
-      - zookeeper
-      - kafka
-      - kafka2
-      - kafka3
-    logging:
-      driver: "none"
+#  sensor_lamp:
+#    environment:
+#      - KAFKA='kafka-29091':'kafka2-29092':'kafka3-29093'
+#    container_name: sensor_lamp
+#    networks:
+#      - household-network
+#    build:
+#      context: .
+#      dockerfile: sensors/lamp_app/Dockerfile
+#    image: ubervelocity/sca_lamp:1.0
+#    depends_on:
+#      - zookeeper
+#      - kafka
+#      - kafka2
+#      - kafka3
+#    logging:
+#      driver: "none"
+#
+#  sensor_vacuum:
+#    environment:
+#      - KAFKA='kafka-29091':'kafka2-29092':'kafka3-29093'
+#    container_name: sensor_vacuum
+#    networks:
+#      - household-network
+#    build:
+#      context: .
+#      dockerfile: sensors/vacuum_app/Dockerfile
+#    image: ubervelocity/sca_vacuum:1.0
+#
+#    depends_on:
+#      - zookeeper
+#      - kafka
+#      - kafka2
+#      - kafka3
+#    logging:
+#      driver: "none"
 
 # Spark infrastructure
   spark-master:
@@ -233,20 +233,20 @@ services:
       - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
       - SPARK_SSL_ENABLED=no
 
-  spark-worker-2:
-    container_name: spark_worker_2
-    image: bitnami/spark:2.4.5
-    networks:
-      - household-network
-    environment:
-      - SPARK_MODE=worker
-      - SPARK_MASTER_URL=spark://spark-master:7077
-      - SPARK_WORKER_MEMORY=1G
-      - SPARK_WORKER_CORES=1
-      - SPARK_RPC_AUTHENTICATION_ENABLED=no
-      - SPARK_RPC_ENCRYPTION_ENABLED=no
-      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
-      - SPARK_SSL_ENABLED=no
+#  spark-worker-2:
+#    container_name: spark_worker_2
+#    image: bitnami/spark:2.4.5
+#    networks:
+#      - household-network
+#    environment:
+#      - SPARK_MODE=worker
+#      - SPARK_MASTER_URL=spark://spark-master:7077
+#      - SPARK_WORKER_MEMORY=1G
+#      - SPARK_WORKER_CORES=1
+#      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+#      - SPARK_RPC_ENCRYPTION_ENABLED=no
+#      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+#      - SPARK_SSL_ENABLED=no
 
   # Spark nodes used for submitting pyspark applications
   spark-heater:
@@ -263,48 +263,48 @@ services:
     networks:
       - household-network
 
-  spark-lamp:
-    build: spark/ml/
-    container_name: 'spark-lamp'
-    environment:
-      - MODEL='lamps'
-      - KAFKA='kafka-29091':'kafka2-29092':'kafka3-29093'
-      - SPARK_MODE=master
-      - SPARK_RPC_AUTHENTICATION_ENABLED=no
-      - SPARK_RPC_ENCRYPTION_ENABLED=no
-      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
-      - SPARK_SSL_ENABLED=no
-    networks:
-      - household-network
+#  spark-lamp:
+#    build: spark/ml/
+#    container_name: 'spark-lamp'
+#    environment:
+#      - MODEL='lamps'
+#      - KAFKA='kafka-29091':'kafka2-29092':'kafka3-29093'
+#      - SPARK_MODE=master
+#      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+#      - SPARK_RPC_ENCRYPTION_ENABLED=no
+#      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+#      - SPARK_SSL_ENABLED=no
+#    networks:
+#      - household-network
+#
+#  spark-vacuum:
+#    build: spark/ml/
+#    container_name: 'spark-vacuum'
+#    environment:
+#      - MODEL='vacuums'
+#      - KAFKA='kafka-29091':'kafka2-29092':'kafka3-29093'
+#      - SPARK_MODE=master
+#      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+#      - SPARK_RPC_ENCRYPTION_ENABLED=no
+#      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+#      - SPARK_SSL_ENABLED=no
+#    networks:
+#      - household-network
 
-  spark-vacuum:
-    build: spark/ml/
-    container_name: 'spark-vacuum'
-    environment:
-      - MODEL='vacuums'
-      - KAFKA='kafka-29091':'kafka2-29092':'kafka3-29093'
-      - SPARK_MODE=master
-      - SPARK_RPC_AUTHENTICATION_ENABLED=no
-      - SPARK_RPC_ENCRYPTION_ENABLED=no
-      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
-      - SPARK_SSL_ENABLED=no
-    networks:
-      - household-network
-
-    # Spark node used for submitting pyspark applications
-  spark:
-    build: spark/streaming_worker
-    container_name: 'spark'
-    environment:
-      - SPARK_MODE=master
-      - SPARK_RPC_AUTHENTICATION_ENABLED=no
-      - SPARK_RPC_ENCRYPTION_ENABLED=no
-      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
-      - SPARK_SSL_ENABLED=no
-    ports:
-      - '8080:8080'
-    networks:
-      - household-network
+#    # Spark node used for submitting pyspark applications
+#  spark:
+#    build: spark/streaming_worker
+#    container_name: 'spark'
+#    environment:
+#      - SPARK_MODE=master
+#      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+#      - SPARK_RPC_ENCRYPTION_ENABLED=no
+#      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+#      - SPARK_SSL_ENABLED=no
+#    ports:
+#      - '8080:8080'
+#    networks:
+#      - household-network
 
   node-streaming:
     container_name: node_streaming
@@ -315,14 +315,14 @@ services:
     networks:
       - household-network
       
-  # Frontend
-  frontend:
-    container_name: frontend
-    restart: always
-    build: frontend/household-view
-    ports:
-      - '80:80'
-    networks:
-      - household-network
-    logging:
-      driver: "none"
+#  # Frontend
+#  frontend:
+#    container_name: frontend
+#    restart: always
+#    build: frontend/household-view
+#    ports:
+#      - '80:80'
+#    networks:
+#      - household-network
+#    logging:
+#      driver: "none"
