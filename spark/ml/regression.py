@@ -51,6 +51,10 @@ def compute_coefficients(df, column):
     mean_t = df_stats['mean_t']
     mean_var = df_stats['mean_' + column]
 
+    # Handle empty database tables
+    if not mean_t:
+        return None, None, None, None
+
     SS_tvar = df_stats["sum(" + column + "*t)"] - n*mean_var*mean_t
     SS_tt = df_stats["sum(t^2)"] - n*mean_t*mean_t
 
@@ -77,6 +81,8 @@ def update_coefficients_for(df):
     for column in [name for name in df.schema.names if name not in excluded]:
 
         min, max, a, b = compute_coefficients(df, column)
+        if not a:
+            return None
 
         print()
         print(f"Coefficients for {model}:{column} = {min, max, a, b}")
@@ -120,12 +126,16 @@ if __name__ == '__main__':
     sleep(20)  # sleep to wait for cassandra
     while True:
         frame = load_and_get_table_df('household', model + "s")
+        coefficients = update_coefficients_for(frame)
 
-        msg = {
-            "model": model,
-            "variables": update_coefficients_for(frame)
-        }
+        # Only send message if database is populated
+        if coefficients:
+            msg = {
+                "model": model,
+                "variables": coefficients
+            }
 
-        # push to kafka
-        producer.send('coefficients', key=model, value=msg)
+            # push to kafka
+            producer.send('coefficients', key=model, value=msg)
+
         sleep(30)
