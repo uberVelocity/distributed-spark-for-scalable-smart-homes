@@ -253,7 +253,7 @@ services:
     build: spark/ml/
     container_name: 'spark-heater'
     environment:
-      - MODEL:'heaters'
+      - MODEL='heaters'
       - KAFKA='kafka-29091':'kafka2-29092':'kafka3-29093'
       - SPARK_MODE=master
       - SPARK_RPC_AUTHENTICATION_ENABLED=no
@@ -267,7 +267,7 @@ services:
     build: spark/ml/
     container_name: 'spark-lamp'
     environment:
-      - MODEL:'lamps'
+      - MODEL='lamps'
       - KAFKA='kafka-29091':'kafka2-29092':'kafka3-29093'
       - SPARK_MODE=master
       - SPARK_RPC_AUTHENTICATION_ENABLED=no
@@ -281,7 +281,7 @@ services:
     build: spark/ml/
     container_name: 'spark-vacuum'
     environment:
-      - MODEL:'vacuums'
+      - MODEL='vacuums'
       - KAFKA='kafka-29091':'kafka2-29092':'kafka3-29093'
       - SPARK_MODE=master
       - SPARK_RPC_AUTHENTICATION_ENABLED=no
