@@ -309,17 +309,3 @@ services:
       - household-network
     logging:
       driver: "none"
-
-  # Service that retrieves sensor information from cassandra
-  history-retriever:
-    container_name: history
-    restart: always
-    build: history_retriever
-    ports:
-      - '4002:4002'
-    networks:
-      - household-network
-    logging:
-      driver: "none"
-
-  
