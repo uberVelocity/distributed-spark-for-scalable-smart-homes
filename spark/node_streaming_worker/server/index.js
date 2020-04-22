@@ -49,6 +49,7 @@ setTimeout(() => {
         
         await coeffConsumer.run({
             eachMessage: async ({topic, partition, message}) => {
+                console.log(`COEFFICIENTS@&#$!@*&($HWSIEUFGN#O@&* RHESLF#LR)`)
                 console.log({
                     partition,
                     offset: message.offset,
