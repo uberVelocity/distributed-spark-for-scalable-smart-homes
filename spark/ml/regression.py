@@ -83,10 +83,9 @@ def update_coefficients_for(df):
         print(flush=True)
 
         results[column] = {
-            "min": min,
-            "max": max,
             "a": a,
-            "b": b
+            "b": b,
+            "limit": min if a < 0 else max
         }
 
     return results
