@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.21.0 (992df58d8)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: kafka3
+  name: kafka3
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: kafka3
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.21.0 (992df58d8)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/household-network: "true"
+        io.kompose.service: kafka3
+    spec:
+      containers:
+      - env:
+        - name: ALLOW_PLAINTEXT_LISTENER
+          value: yes
+        - name: KAFKA_CFG_ADVERTISED_LISTENERS
+          value: PLAINTEXT://kafka3:9093,PLAINTEXT_HOST://kafka3:29093
+        - name: KAFKA_CFG_LISTENERS
+          value: PLAINTEXT://:9093,PLAINTEXT_HOST://:29093
+        - name: KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP
+          value: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+        - name: KAFKA_CFG_ZOOKEEPER_CONNECT
+          value: zookeeper:2181
+        image: bitnami/kafka:2
+        imagePullPolicy: ""
+        name: kafka-3
+        ports:
+        - containerPort: 9093
+        - containerPort: 9092
+        resources: {}
+        volumeMounts:
+        - mountPath: /bitnami
+          name: kafka3-data
+      restartPolicy: Always
+      serviceAccountName: ""
+      volumes:
+      - name: kafka3-data
+        persistentVolumeClaim:
+          claimName: kafka3-data
+status: {}
