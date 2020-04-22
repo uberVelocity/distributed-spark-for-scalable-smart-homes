@@ -10,7 +10,13 @@ var coefficientsDictionary = {}
 
 function insertSensorData(sensorData){
     sensorDictionary[sensorData.id] = sensorData;
-    produceMessage(sensorData.id);
+    if(coefficientsDictionary[sensorDictionary[sensorData.id].model]){
+        produceMessage(sensorData.id);
+
+    }
+    else{
+        console.log("Nothing in the coefficients dictionary for this model :(")
+    }
 }
 
 function insertCoefficients(msg){
