@@ -93,7 +93,7 @@ def update_coefficients_for(df):
 
 if __name__ == '__main__':
 
-    model = os.environ.get("MODEL")
+    model = str(os.environ.get("MODEL")).replace("'", "")
 
     spark_config = SparkConf()
     spark_config.set('spark.cassandra.connection.host', 'cassandra-cluster')
@@ -117,6 +117,7 @@ if __name__ == '__main__':
             print('No brokers available, sleeping', flush=True)
             sleep(5)
 
+    sleep(20)  # sleep to wait for cassandra
     while True:
         frame = load_and_get_table_df('household', model)
 
