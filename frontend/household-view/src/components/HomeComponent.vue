@@ -8,7 +8,7 @@
         v-bind:index="index"
         v-bind:key="device.id"
       >
-        {{ `${device.id}: ${device.deltaT}` }}
+        {{ `${device.id}: ${device.deltat}` }}
       </div>
     </div>
     <button @click="getData">Get predictions</button>
