@@ -34,7 +34,7 @@ async function produceMessage(specificSensor){
         var coeffs = coefficientsDictionary[sensorDictionary[sensorId].model]
         var sum = 0;
         var howMany = 0;
-        for(var coeff in coeffs){
+        for(var coeff of coeffs){
             deltaT = (coeff.lim - coeff.b)/coeff.a - sensorDictionary[sensorId].t;
             sum = sum + deltaT;
             howMany = howMany + 1;
