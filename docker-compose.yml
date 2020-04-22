@@ -315,14 +315,14 @@ services:
     networks:
       - household-network
       
-#  # Frontend
-#  frontend:
-#    container_name: frontend
-#    restart: always
-#    build: frontend/household-view
-#    ports:
-#      - '80:80'
-#    networks:
-#      - household-network
-#    logging:
-#      driver: "none"
+  # Frontend
+  frontend:
+    container_name: frontend
+    restart: always
+    build: frontend/household-view
+    ports:
+      - '80:80'
+    networks:
+      - household-network
+    logging:
+      driver: "none"

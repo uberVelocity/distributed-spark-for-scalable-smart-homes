@@ -72,7 +72,7 @@ def update_coefficients_for(df):
     :return: List containing tuples (a, b, max, min) with linear regression coefficients and limits.
     """
 
-    results = []
+    results = {}
     excluded = ['id', 'model', 't', 'ts']
     for column in [name for name in df.schema.names if name not in excluded]:
 
@@ -82,13 +82,14 @@ def update_coefficients_for(df):
         print(f"Coefficients for {model}:{column} = {min, max, a, b}")
         print(flush=True)
 
-        results.append({
-            "variable": column,
+        results[column] = {
             "min": min,
             "max": max,
             "a": a,
             "b": b
-        })
+        }
+
+    return results
 
 
 if __name__ == '__main__':
