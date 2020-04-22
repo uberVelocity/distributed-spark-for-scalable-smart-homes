@@ -6,23 +6,15 @@ const kafka = new Kafka({
 });
 
 var sensorDictionary = {}
-var latestCoefficients = {
-    a: null,
-    b: null,
-    lim: null
-}
+var coefficientsDictionary = {}
+
 function insertSensorData(sensorData){
     sensorDictionary[sensorData.id] = sensorData;
-    if(latestCoefficients.a != null){
-        produceMessage(sensorData.id);
-    }
-    else{
-        console.log("No coefficients received yet... :(");
-    }
+    produceMessage(sensorData.id);
 }
 
-function insertCoefficients(coefficients){
-    latestCoefficients = coefficients;
+function insertCoefficients(msg){
+    coefficientsDictionary[msg.sensor] = msg.coefficients;
     produceMessage();
 }
 
@@ -39,10 +31,18 @@ async function produceMessage(specificSensor){
     }
     for(var sensorId in sensorIds){
         var messageValue = {};
-        deltaT = (latestCoefficients.lim - latestCoefficients.b)/latestCoefficients.a - sensorDictionary[id].t;
+        var coeffs = coefficientsDictionary[sensorDictionary[sensorId].model]
+        var sum = 0;
+        var howMany = 0;
+        for(var coeff in coeffs){
+            deltaT = (coeff.lim - coeff.b)/coeff.a - sensorDictionary[sensorId].t;
+            sum = sum + deltaT;
+            howMany = howMany + 1;
+        }
+        var realDeltaT = sum/howMany 
         messageValue = {
             id: sensorId,
-            deltat: deltaT
+            deltat: realDeltaT
         };
         messages.push({value: messageValue});
     }

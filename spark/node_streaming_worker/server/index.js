@@ -28,7 +28,8 @@ setTimeout(() => {
                 });
                 const id = JSON.parse(message.value.toString())["id"];
                 const t = JSON.parse(message.value.toString())["t"];
-                let sensorData = {id, t}
+                const model = JSON.parse(message.value.toString())["model"];
+                let sensorData = {id, t, model}
                 StreamHandler.insertSensorData(sensorData);
             }
         });
@@ -53,12 +54,16 @@ setTimeout(() => {
                     offset: message.offset,
                     value: message.value.toString(),
                 });
-                const a = JSON.parse(message.value.toString())["a"];
-                const b = JSON.parse(message.value.toString())["b"];
-                const lim = JSON.parse(message.value.toString())["lim"];
-                
-                let coefficients = {a, b, lim}
-                StreamHandler.insertCoefficients(coefficients);
+                const sensor = JSON.parse(message.value.toString())["model"];
+                var coefficients = {};
+                for(var varName in message.value.variables){
+                    var a = JSON.parse(message.value.variables[varName].toString())["a"];
+                    var b = JSON.parse(message.value.variables[varName].toString())["b"];
+                    var lim = JSON.parse(message.value.variables[varName].toString())["limit"];
+                    coefficients[varName] = {a, b, lim}
+                }
+                var result = {sensor, coefficients}
+                StreamHandler.insertCoefficients(result);
             }
         });
 
@@ -74,4 +79,4 @@ setTimeout(() => {
     const port = process.env.PORT || 4005;
 
     app.listen(port, () => console.log(`Node streaming started on port ${port}`));
-}, 10000);
+}, 50000);

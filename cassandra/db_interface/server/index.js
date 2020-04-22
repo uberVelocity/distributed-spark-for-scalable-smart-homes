@@ -75,4 +75,4 @@ setTimeout(() => {
     const port = process.env.PORT || 4004;
 
     app.listen(port, () => console.log(`Database interface started on port ${port}`));
-}, 10000);
+}, 50000);
