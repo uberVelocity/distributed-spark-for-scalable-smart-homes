@@ -55,6 +55,55 @@ services:
       - household-network
 
 
+  # Sensors
+  sensor_heater:
+    environment:
+      - KAFKA='kafka-29091':'kafka2-29092':'kafka3-29093'
+    container_name: sensor_heater
+    networks:
+      - household-network
+    build:
+      context: .
+      dockerfile: sensors/heater_app/Dockerfile
+    image: ubervelocity/sca_heater:1.0
+    depends_on:
+      - zookeeper
+      - kafka
+      - kafka2
+      - kafka3
+
+  sensor_lamp:
+    environment:
+      - KAFKA='kafka-29091':'kafka2-29092':'kafka3-29093'
+    container_name: sensor_lamp
+    networks:
+      - household-network
+    build:
+      context: .
+      dockerfile: sensors/lamp_app/Dockerfile
+    image: ubervelocity/sca_lamp:1.0
+    depends_on:
+      - zookeeper
+      - kafka
+      - kafka2
+      - kafka3
+
+  sensor_vacuum:
+    environment:
+      - KAFKA='kafka-29091':'kafka2-29092':'kafka3-29093'
+    container_name: sensor_vacuum
+    networks:
+      - household-network
+    depends_on:
+      - zookeeper
+      - kafka
+      - kafka2
+      - kafka3
+    build:
+      context: .
+      dockerfile: sensors/vacuum_app/Dockerfile
+    image: ubervelocity/sca_vacuum:1.0
+
   # Zookeeper
   zookeeper:
     container_name: zookeeper
@@ -146,62 +195,6 @@ services:
       - household-network
     environment:
       - ZK_HOSTS=zookeeper:2181
-
-  # Sensors
-  sensor_heater:
-    environment:
-      - KAFKA='kafka-29091':'kafka2-29092':'kafka3-29093'
-    container_name: sensor_heater
-    networks:
-      - household-network
-    build:
-      context: .
-      dockerfile: sensors/heater_app/Dockerfile
-    image: ubervelocity/sca_heater:1.0
-    depends_on:
-      - zookeeper
-      - kafka
-      - kafka2
-      - kafka3
-    logging:
-      driver: "none"
-
-  sensor_lamp:
-    environment:
-      - KAFKA='kafka-29091':'kafka2-29092':'kafka3-29093'
-    container_name: sensor_lamp
-    networks:
-      - household-network
-    build:
-      context: .
-      dockerfile: sensors/lamp_app/Dockerfile
-    image: ubervelocity/sca_lamp:1.0
-    depends_on:
-      - zookeeper
-      - kafka
-      - kafka2
-      - kafka3
-    logging:
-      driver: "none"
-
-  sensor_vacuum:
-    environment:
-      - KAFKA='kafka-29091':'kafka2-29092':'kafka3-29093'
-    container_name: sensor_vacuum
-    networks:
-      - household-network
-    build:
-      context: .
-      dockerfile: sensors/vacuum_app/Dockerfile
-    image: ubervelocity/sca_vacuum:1.0
-
-    depends_on:
-      - zookeeper
-      - kafka
-      - kafka2
-      - kafka3
-    logging:
-      driver: "none"
 
 # Spark infrastructure
   spark-master:
