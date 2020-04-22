@@ -31,7 +31,7 @@ async function produceMessage(specificSensor){
         sensorIds.push(specificSensor);
     }
     else {
-       for(var key in sensorDictionary.keys()){
+       for(var key in sensorDictionary{
         sensorIds.push(key);
        } 
     }
