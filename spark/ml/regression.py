@@ -62,7 +62,7 @@ def compute_coefficients(df, column):
     print((a, b, df_stats['min_' + column], df_stats['max_' + column]))
     print(flush=True)
 
-    return df_stats['min_' + column], df_stats['min_' + column], a, b
+    return df_stats['min_' + column], df_stats['max_' + column], a, b
 
 
 def update_coefficients_for(df):
