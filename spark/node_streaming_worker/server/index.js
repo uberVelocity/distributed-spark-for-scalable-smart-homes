@@ -80,4 +80,4 @@ setTimeout(() => {
     const port = process.env.PORT || 4005;
 
     app.listen(port, () => console.log(`Node streaming started on port ${port}`));
-}, 50000);
+}, 40000);

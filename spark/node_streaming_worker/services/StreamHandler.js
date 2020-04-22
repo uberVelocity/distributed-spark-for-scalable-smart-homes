@@ -5,14 +5,17 @@ const kafka = new Kafka({
     brokers: ['kafka:29091', 'kafka2:29092', 'kafka3:29093']
 });
 
+function isEmptyObject(obj) {
+    return !Object.keys(obj).length;
+  }
+
 var sensorDictionary = {}
 var coefficientsDictionary = {}
 
 function insertSensorData(sensorData){
     sensorDictionary[sensorData.id] = sensorData;
-    if(coefficientsDictionary[sensorDictionary[sensorData.id].model]){
+    if(!isEmptyObject(coefficientsDictionary) && !isEmptyObject(sensorDictionary) && !isEmptyObject(coefficientsDictionary[sensorDictionary[sensorData.id]]) && coefficientsDictionary[sensorDictionary[sensorData.id].model]){
         produceMessage(sensorData.id);
-
     }
     else{
         console.log("Nothing in the coefficients dictionary for this model :(")
@@ -21,7 +24,9 @@ function insertSensorData(sensorData){
 
 function insertCoefficients(msg){
     coefficientsDictionary[msg.sensor] = msg.coefficients;
-    produceMessage();
+    if (!isEmptyObject(sensorDictionary)) {
+        produceMessage();
+    }
 }
 
 async function produceMessage(specificSensor){
@@ -31,7 +36,7 @@ async function produceMessage(specificSensor){
         sensorIds.push(specificSensor);
     }
     else {
-       for(var key in sensorDictionary{
+       for(var key in sensorDictionary){
         sensorIds.push(key);
        } 
     }
@@ -55,6 +60,7 @@ async function produceMessage(specificSensor){
     var producer = kafka.producer();
     console.log(messages);
     await producer.connect();
+    console.log(`SENDING: ${messages}`)
     await producer.send({
         topic: "predictions",
         messages: messages
