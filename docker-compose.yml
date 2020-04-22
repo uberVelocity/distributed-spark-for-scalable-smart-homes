@@ -290,14 +290,28 @@ services:
       - SPARK_SSL_ENABLED=no
     networks:
       - household-network
-  
+
+    # Spark node used for submitting pyspark applications
+  spark:
+    build: spark/streaming_worker
+    container_name: 'spark'
+    environment:
+      - SPARK_MODE=master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+    ports:
+      - '8080:8080'
+    networks:
+      - household-network
 
   node-streaming:
     container_name: node_streaming
     restart: always
     build: spark/node_streaming_worker
     ports:
-      - 4004:4004
+      - 4005:4005
     networks:
       - household-network
       
