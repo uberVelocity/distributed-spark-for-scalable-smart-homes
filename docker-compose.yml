@@ -253,7 +253,7 @@ services:
     build: spark/ml/
     container_name: 'spark-heater'
     environment:
-      - MODEL='heaters'
+      - MODEL='heater'
       - KAFKA='kafka-29091':'kafka2-29092':'kafka3-29093'
       - SPARK_MODE=master
       - SPARK_RPC_AUTHENTICATION_ENABLED=no

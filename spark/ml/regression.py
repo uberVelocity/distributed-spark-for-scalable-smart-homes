@@ -120,7 +120,7 @@ if __name__ == '__main__':
 
     sleep(20)  # sleep to wait for cassandra
     while True:
-        frame = load_and_get_table_df('household', model)
+        frame = load_and_get_table_df('household', model + "s")
 
         msg = {
             "model": model,
