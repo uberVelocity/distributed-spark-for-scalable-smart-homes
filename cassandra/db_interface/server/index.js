@@ -29,26 +29,33 @@ setTimeout(() => {
                 });
                 let params;
                 let sensor;
-                const id = JSON.parse(message.value.toString())["id"];
-                const ts = JSON.parse(message.value.toString())["timestamp"];
-                const gw = JSON.parse(message.value.toString())["sensors"]["wattage"];
+                const data = JSON.parse(message.value.toString());
                 
-                if (message.value.toString().includes("temperature")) {
-                    const temp = JSON.parse(message.value.toString())["sensors"]["temperature"];
-                    params = [id, ts, gw, temp];
-                    sensor = 'heater';
+                const id = data["id"];
+                const timestamp = data["timestamp"];
+                const t = data["t"];
+                const model = data["model"];
+                const variables = data["variables"];
+
+                if (model == "heater") {
+                    const temp = variables["temperature"];
+                    const wattage = variables["wattage"];
+                    params = [id, model, t, timestamp, wattage, temp];
+                    sensor = "heater";
                     console.log(`Heater message to be inserted = ${params}`);
                 }
-                else if (message.value.toString().includes("lumen")) {
-                    const lumen = JSON.parse(message.value.toString())["sensors"]["lumen"];
-                    params = [id, ts, gw, lumen];
-                    sensor = 'lamp';
+                else if (model == "lamp") {
+                    const lumen = variables["lumen"];
+                    const wattage = variables["wattage"];
+                    params = [id, model, t, timestamp, wattage, lumen];
+                    sensor = "lamp";
                     console.log(`Lamp message to be inserted = ${params}`);
                 }
-                else if (message.value.toString().includes("suction")) {
-                    const suction = JSON.parse(message.value.toString())["sensors"]["suction"];
-                    params = [id, ts, gw, suction];
-                    sensor = 'vacuum';
+                else if (model == "vacuum") {
+                    const suction = variables["suction"];
+                    const wattage = variables["wattage"];
+                    params = [id, model, t, timestamp, wattage, suction];
+                    sensor = "vacuum";
                     console.log(`Vacuum message to be inserted = ${params}`);
                 }
                 PackageService.insertData(sensor, params);
@@ -62,7 +69,10 @@ setTimeout(() => {
     app.use(cors());
     app.use(express.json());
 
+    const prediction = require('../routes/api/prediction');
+
+    app.use('/api/prediction', prediction);
     const port = process.env.PORT || 4004;
 
-    app.listen(port, () => console.log(`Test sensor started on port ${port}`));
-}, 30000);
+    app.listen(port, () => console.log(`Database interface started on port ${port}`));
+}, 10000);

@@ -1,8 +1,15 @@
 from pyspark import SparkContext, SparkConf
 from pyspark.sql import SQLContext
-from pyspark.sql.functions import mean as _mean, stddev as _stddev, col
+from pyspark.sql import functions as F
+from pyspark.sql.functions import col
+from kafka import KafkaProducer
+from kafka.errors import NoBrokersAvailable
+from time import sleep
 
 import pyspark
+import json
+import os
+
 
 def load_and_get_table_df(keys_space_name, table_name):
     """
@@ -18,77 +25,75 @@ def load_and_get_table_df(keys_space_name, table_name):
     return table_df
 
 
-def z_score(x, mean, std):
-    return (x - mean) / std
-
-
-def convert_to_zscore(df):
+def compute_coefficients(df, column):
     """
-    Converts a DataFrame to z score values.
-    :param df: DataFrame to be converted
-    :return: A DataFrame containing the transformed table.
+    Computes min and max values for the given DataFrame column
+    :param df: DataFrame to be used.
+    :param column: String of the column name.
+    :return: (min value, max value)
     """
 
-    means = {}
-    stds = {}
+    # Filter out all values in column higher than -1
+    df = df.select(col("t"), col(column)).where(column + " > -1")
+    n = df.select("t").count()
 
-    for column in df.schema.names[2:]:  # leave out the first two columns
-        df_stats = df.select(
-            _mean(col(column)).alias('mean'),  # Compute mean for column
-            _stddev(col(column)).alias('std')  # Compute std for column
-        ).collect()
+    # Compute required statistics
+    df_stats = df.select(
+        F.mean(col(column)).alias('mean_' + column),
+        F.mean(col("t")).alias('mean_t'),
+        F.max(col(column)).alias('max_' + column),
+        F.min(col(column)).alias('min_' + column),
+        F.sum(col(column) * col("t")).alias("sum(" + column + "*t)"),
+        F.sum(col("t") * col("t")).alias("sum(t^2)")
+    ).collect()[0]
 
-        means[column] = df_stats[0]['mean']
-        stds[column] = df_stats[0]['std']
+    # Regression
+    mean_t = df_stats['mean_t']
+    mean_var = df_stats['mean_' + column]
 
-    cols = df.schema.names[2:]  # Needs to be specified here, otherwise references to names not available.
+    SS_tvar = df_stats["sum(" + column + "*t)"] - n*mean_var*mean_t
+    SS_tt = df_stats["sum(t^2)"] - n*mean_t*mean_t
 
-    # RDD used to distribute task
-    transformed = df.rdd.map(lambda x: (x[0],
-                                        x[1],
-                                        z_score(x[2], means[cols[0]], stds[cols[0]]),
-                                        z_score(x[3], means[cols[1]], stds[cols[1]])
-                                        )
-                             ).toDF(df.schema.names)
+    a = SS_tvar / SS_tt
+    b = mean_var - a * mean_t
 
-    return transformed
+    print()
+    print("Summary of " + str(column))
+    print((a, b, df_stats['min_' + column], df_stats['max_' + column]))
+    print(flush=True)
+
+    return df_stats['min_' + column], df_stats['min_' + column], a, b
 
 
-def partition_time_sync(partition):
+def update_coefficients_for(df):
     """
-    Convert each partition's timestamps to seconds since start.
-    :param partition:
-    :return:
-    """
-    pass
-
-
-def get_coefficients(df):
-    """
-    Gets the a, b and limit coefficients per parameter column for use in prediction.
+    Gets the a, b and limit coefficients per parameter column and pushes them to Kafka.
     :param df: DataFrame containing the training data.
     :return: List containing tuples (a, b, max, min) with linear regression coefficients and limits.
     """
 
-    df = df.repartition("id")  # repartition data such that each partition controls only one id.
-    df.foreachPartition(partition_time_sync)
+    results = []
+    excluded = ['id', 'model', 't', 'ts']
+    for column in [name for name in df.schema.names if name not in excluded]:
 
-    for column in df.schema.names[2:]:
+        min, max, a, b = compute_coefficients(df, column)
 
-        # -1 values are excluded as these are used as sensor malfunction labeling.
-        max_val = df.filter(column + "> -1").groupby().max(column).first()["max(" + column + ")"]
-        min_val = df.filter(column + "> -1").groupby().min(column).first()["min(" + column + ")"]
-
-        # Print statements together as to not have spark statements clutter debug
         print()
-        print(column)
-        print("Max: " + str(max_val) + "\nMin: " + str(min_val))
-        print()
+        print(f"Coefficients for {model}:{column} = {min, max, a, b}")
+        print(flush=True)
 
-    return ''
+        results.append({
+            "variable": column,
+            "min": min,
+            "max": max,
+            "a": a,
+            "b": b
+        })
 
 
 if __name__ == '__main__':
+
+    model = os.environ.get("MODEL")
 
     spark_config = SparkConf()
     spark_config.set('spark.cassandra.connection.host', 'cassandra-cluster')
@@ -96,14 +101,30 @@ if __name__ == '__main__':
     spark_context = SparkContext(master='spark://spark-master:7077', appName='regression', conf=spark_config)
     sql_context = SQLContext(spark_context)  # needed to be able to query data.
 
-    heaters = load_and_get_table_df('household', 'heatersensor')
-    heaters.show()
+    # Get the kafka brokers from the env variables
+    kafka_servers = os.environ.get('KAFKA').replace("'", "").split(":")
+    kafka_servers = [server.replace("-", ":") for server in kafka_servers]
 
-    parameters = get_coefficients(heaters)
+    producer = None
+    while not producer:
+        try:
+            producer = KafkaProducer(
+                bootstrap_servers=kafka_servers,
+                key_serializer=lambda m: str(m).encode(),  # transforms id string to bytes
+                value_serializer=lambda m: json.dumps(m).encode('ascii')  # transforms messages to json bytes
+            )
+        except NoBrokersAvailable:
+            print('No brokers available, sleeping', flush=True)
+            sleep(5)
 
-    # heaters = convert_to_zscore(heaters)
-    # heaters.show()
+    while True:
+        frame = load_and_get_table_df('household', model)
 
-    # Finish
-    spark_context.stop()
+        msg = {
+            "model": model,
+            "variables": update_coefficients_for(frame)
+        }
 
+        # push to kafka
+        producer.send('coefficients', key=model, value=msg)
+        sleep(30)
